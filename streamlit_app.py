@@ -2,127 +2,168 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Pastel color palette
-PASTEL_GREEN = "#CDE6D0"
-PASTEL_BLUE = "#CEE7F5"
-PASTEL_PURPLE = "#DED1E8"
-BUTTON_BG = "#D3B5E6"
-BORDER_COLOR = "#8FA6C1"
-OFF_WHITE = "#FBFBFD"
-HEADER_BG = "#BFEDEA"
+# Pastel colors and panel widths (adjust as needed)
+SME_BG = "#F5F6F9"
+PASTEL_GREEN = "#CEF3D6"
+PASTEL_BLUE = "#CFE8F6"
+PASTEL_PURPLE = "#E6D4F1"
+PASTEL_GREY = "#F7F8FA"
+BORDER_COLOR = "#B0B8D1"
+OFF_WHITE = "#FCFCFF"
+PANEL_W = 1024
+BUTTON_H = 42
 
-st.set_page_config(page_title="SME Panel", layout="wide")
+st.set_page_config(page_title="SME iPad Panel", layout="centered")
+
 st.markdown(f"""
-<style>
-#MainMenu, header, footer {{visibility: hidden;}}
-[data-testid="stSidebar"] {{ display: none !important; }}
-.block-container {{ padding-top: 0.8rem; }}
-</style>
+    <style>
+    html, body, [data-testid="stAppViewContainer"] {{
+        background: {SME_BG} !important;
+    }}
+    .block-container {{
+        max-width: {PANEL_W}px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-top: 8px !important;
+        padding-bottom: 6px !important;
+    }}
+    .smepastel {{
+        border:2.5px solid {BORDER_COLOR}; border-radius:14px; background: {PASTEL_GREY}; 
+        margin-bottom:18px; padding:0;
+    }}
+    .smepane-title {{
+        background: {PASTEL_GREEN}; border-radius:14px 14px 0 0; 
+        padding:12px 35px 5px 18px; display:flex; 
+        justify-content:space-between; align-items:center;
+        font-size:1.15rem;font-weight:700;
+    }}
+    .sme-btn-bar button {{
+        font-size:1.04rem;margin-right:8px;height:{BUTTON_H}px;
+        border-radius:8px;border:none;font-weight:600;padding:0 19px;
+        background: {PASTEL_PURPLE};color:#513568;
+    }}
+    .sme-btn-bar button.save {{
+        background:{PASTEL_GREEN};color:#176655;
+    }}
+    .sme-btn-bar button.next {{
+        background:{PASTEL_BLUE};color:#194365;
+    }}
+    .sme-btn-bar button.cont {{
+        background:{PASTEL_PURPLE};color:#513568;
+    }}
+    .sme-upload-bar {{
+        display: flex; gap: 16px; padding: 18px 10px; background: {PASTEL_BLUE}; border-radius: 0 0 14px 14px; margin-bottom:4px;
+        align-items:center; min-height:54px;
+    }}
+    .sme-upload-link {{
+        background: #ecf6fa; border:1.5px solid #a6b4ca; border-radius:7px; padding:8px 6px; font-size:1.02rem; width:300px;
+    }}
+    .sme-upload-file {{ flex:2; }}
+    .sme-load-btn {{
+        background: #c7f8eb; color:#14696f; border-radius:7px; min-width:70px;
+        font-size:1.07rem; height:39px; border:none; font-weight:700; margin-left:10px;
+    }}
+    </style>
 """, unsafe_allow_html=True)
 
+# ----------- Top Layer 1: Title/date/time
 now = datetime.now()
-date_str = now.strftime("“%Y-%b-%d”")
-time_24 = now.strftime("“%H:%M”")
-
-st.markdown(f"""
-<div style="background:{HEADER_BG};border-radius:13px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:16px 18px 8px 18px;margin-bottom:8px;">
-  <span style="font-size:1.25rem;font-weight:700;color:#23504d;">Veda-Sakthi SME Panel</span>
-  <span style="font-size:1.08rem;color:#1e394c;">{date_str} | {time_24}</span>
-</div>
-""", unsafe_allow_html=True)
-
-uploaded_file = st.file_uploader("Upload bilingual Excel (.xlsx)", type=["xlsx"])
-if uploaded_file:
-    df = pd.read_excel(uploaded_file)
-else:
-    df = pd.DataFrame({
-        "question": ["Sample: What is a cell?", "Sample: Explain tissue organization."],
-        "கேள்வி": ["உதாரணம்: ஒரு செல் என்றால் என்ன?", "உதாரணம்: திசு அமைப்பு விளக்குக."],
-        "A": ["Option A", "Option A2"],
-        "B": ["Option B", "Option B2"],
-        "C": ["Option C", "Option C2"],
-        "D": ["Option D", "Option D2"],
-        "_id": [1, 2]
-    })
-
-if 'edited_tamil' not in st.session_state:
-    st.session_state.edited_tamil = list(df["கேள்வி"])
-if 'row_index' not in st.session_state:
-    st.session_state.row_index = 0
-
-row_idx = st.session_state.row_index
-total_questions = len(df)
-
-# Top button bar
-st.markdown(f"""
-<div style="display:flex;gap:8px;margin-bottom:12px;">
-  <button style="background:{PASTEL_GREEN};color:#185735;font-size:1rem;border:none;padding:7px 18px;border-radius:8px;font-weight:600;">Hi! Glossary</button>
-  <button style="background:{PASTEL_PURPLE};color:#54315b;border:none;padding:7px 18px;border-radius:8px;font-weight:700;">Save & Cont.</button>
-  <span style="background:{OFF_WHITE};border:1px solid {BORDER_COLOR};padding:7px 14px;border-radius:8px;">Row #A: {row_idx+1}</span>
-  <span style="background:{OFF_WHITE};border:1px solid {BORDER_COLOR};padding:7px 14px;border-radius:8px;">_id: {df.loc[row_idx, '_id'] if '_id' in df.columns else row_idx+1}</span>
-  <span style="background:{OFF_WHITE};border:1px solid {BORDER_COLOR};padding:7px 14px;border-radius:8px;">Row #Z: {total_questions-row_idx}</span>
-  <button style="background:{PASTEL_BLUE};color:#18355d;border:none;padding:7px 18px;border-radius:8px;font-weight:700;">Save & Next</button>
-  <button style="background:{PASTEL_GREEN};color:#367d51;border:none;padding:7px 18px;border-radius:8px;font-weight:700;">Save File</button>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown(f"<div style='background:{OFF_WHITE}; border-radius:13px; border:1px solid {BORDER_COLOR}; padding:18px;'>", unsafe_allow_html=True)
-st.markdown("<strong>கேள்வி :</strong>", unsafe_allow_html=True)
-
-edited_tamil = st.text_area("Edit Tamil Text", value=st.session_state.edited_tamil[row_idx], height=54)
-if st.button("Save Edit", key="save_edit"):
-    st.session_state.edited_tamil[row_idx] = edited_tamil
-    st.success("Saved edit for this question.")
-
-st.markdown(f"""
-<div style="display:flex;gap:7px;margin-bottom:10px;">
-    <div style="flex:1;background:{PASTEL_GREEN};border-radius:8px;padding:12px 8px;">Auto Display "A"<br>{df.iloc[row_idx]['A'] if 'A' in df.columns else ""}</div>
-    <div style="flex:1;background:{PASTEL_GREEN};border-radius:8px;padding:12px 8px;">Auto Display "B"<br>{df.iloc[row_idx]['B'] if 'B' in df.columns else ""}</div>
-    <div style="flex:1;background:{PASTEL_BLUE};border-radius:8px;padding:12px 8px;">Auto Display "C"<br>{df.iloc[row_idx]['C'] if 'C' in df.columns else ""}</div>
-    <div style="flex:1;background:{PASTEL_BLUE};border-radius:8px;padding:12px 8px;">Auto Display "D"<br>{df.iloc[row_idx]['D'] if 'D' in df.columns else ""}</div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-<div style="display:flex;gap:16px;margin-bottom:9px;">
-    <div style="background:{PASTEL_PURPLE};border-radius:7px;padding:11px 7px;min-width:180px;">
-        <label style="font-weight:600;color:#553cb4;">சொல் அகராதி / Glossary</label><br>
-        <input type="text" style="width:95%;padding:7px;border-radius:8px;" placeholder="Type the word">
+st.markdown(
+    f"""
+    <div class="smepane-title" style="width:{PANEL_W}px;margin-bottom:0;">
+        <span>Veda-Sakthi SME Panel <span style='font-weight:400; font-size:0.89rem;'>&nbsp;&nbsp;| Subject Matter Expert (SME) Review</span></span>
+        <span>
+            {now.strftime("“%Y-%b-%d”")} &nbsp;|&nbsp; {now.strftime("“%H:%M”")}
+        </span>
     </div>
-    <div style="background:{PASTEL_PURPLE};border-radius:7px;padding:11px 7px;min-width:180px;">
-        <label style="font-weight:600;color:#363c86;">சரியான பதில் / Correct Answer</label><br>
-        <select style="width:88%;padding:7px;border-radius:8px;margin-top:3px;">
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-            <option>D</option>
-        </select>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True
+)
 
-explanation = st.text_area("விளக்கங்கள் :", value="", height=45)
+# ----------- Top Layer 2: Upload area (Paste link + local upload + Load)
+st.markdown(f'<div class="smepastel" style="padding:0;">', unsafe_allow_html=True)
+upload_cols = st.columns([2, 2, 1])
+with upload_cols[0]:
+    drive_link = st.text_input(
+        "Paste Drive/Excel Link here", key="upload_drive_link",
+        placeholder="https://drive.google.com/...",
+        help="Paste link to an Excel/CSV file shared with link access."
+    )
+with upload_cols[1]:
+    uploaded_file = st.file_uploader(
+        "Or select file from device", type=["xlsx", "xls", "csv"], key="upload_local_file"
+    )
+with upload_cols[2]:
+    if st.button("LOAD", key="load_btn_panel"):
+        st.success("File/Link load requested (simulate logic here)")
+st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<hr>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-weight:600;'>தமிழ் அசல்</div>", unsafe_allow_html=True)
-st.markdown(f"<div style='background:{PASTEL_PURPLE};border-radius:8px;padding:10px;'>{df.iloc[row_idx]['கேள்வி']}</div>", unsafe_allow_html=True)
-st.markdown("<div style='font-weight:600;'>English</div>", unsafe_allow_html=True)
-st.markdown(f"<div style='background:{PASTEL_BLUE};border-radius:8px;padding:10px;'>{df.iloc[row_idx]['question']}</div>", unsafe_allow_html=True)
+# Optionally, show what was loaded for confirmation.
+if drive_link:
+    st.markdown(
+        f"<div style='background:#eaf7e6;padding:6px 8px;border-radius:7px;font-size:0.99rem;'>Loaded file link: {drive_link}</div>",
+        unsafe_allow_html=True)
+if uploaded_file is not None:
+    st.markdown(
+        f"<div style='background:#f9f6e4;padding:6px 8px;border-radius:7px;font-size:0.99rem;'>File uploaded: {uploaded_file.name}</div>",
+        unsafe_allow_html=True
+    )
 
-col1, col2 = st.columns(2)
-with col1:
-    if row_idx > 0:
-        if st.button("Previous", key="prev"):
-            st.session_state.row_index -= 1
-with col2:
-    if row_idx < len(df) - 1:
-        if st.button("Next", key="next"):
-            st.session_state.row_index += 1
+# ----------- Top Layer 3: Button bar
+st.markdown(f'<div class="smepastel"><div class="sme-btn-bar" style="padding:12px 18px 8px 18px;">', unsafe_allow_html=True)
+colB = st.columns([1,1,1,1,1,1,1])
+with colB[0]:
+    st.button("Hi! Glossary", key="btn_glossary")
+with colB[1]:
+    st.button("Save & Cont.", key="btn_savecont", help="Save and continue editing")
+with colB[2]:
+    st.button("Row #A", key="btn_rowA")
+with colB[3]:
+    st.button("_id Number", key="btn_id")
+with colB[4]:
+    st.button("Row #Z", key="btn_rowZ")
+with colB[5]:
+    st.button("Save & Next", key="btn_next")
+with colB[6]:
+    st.button("Save File", key="btn_savefile")
+st.markdown("</div></div>", unsafe_allow_html=True)
 
-if st.button("Finish", key="finish"):
-    df["கேள்வி"] = st.session_state.edited_tamil
-    df.to_excel("SME_Reviewed_bilingual.xlsx", index=False)
-    st.success("All edits saved locally as SME_Reviewed_bilingual.xlsx.")
+# ---- Central Editing/Table Panel ----
+st.markdown(
+    f"<div class='smepastel' style='min-height:390px;padding:25px 14px 20px 14px;'>"
+    f"<div style='font-size:1.15rem;font-weight:600;margin-bottom:7px;'>கேள்வி :</div>", unsafe_allow_html=True)
+tm_edit = st.text_area("Edit Tamil", value="உதாரணம்: ஒரு செல் என்றால் என்ன?", height=52)
 
+# MCQ options (A+B, C+D) and glossary/answer
+mcq1, mcq2 = st.columns([1,1])
+with mcq1: st.markdown(f"<div style='background:{PASTEL_GREEN};padding:13px 8px;border-radius:8px;'>Auto 'A'<br>Option A</div>",unsafe_allow_html=True)
+with mcq2: st.markdown(f"<div style='background:{PASTEL_GREEN};padding:13px 8px;border-radius:8px;'>Auto 'B'<br>Option B</div>",unsafe_allow_html=True)
+mcq3, mcq4 = st.columns([1,1])
+with mcq3: st.markdown(f"<div style='background:{PASTEL_BLUE};padding:13px 8px;border-radius:8px;'>Auto 'C'<br>Option C</div>",unsafe_allow_html=True)
+with mcq4: st.markdown(f"<div style='background:{PASTEL_BLUE};padding:13px 8px;border-radius:8px;'>Auto 'D'<br>Option D</div>",unsafe_allow_html=True)
+
+# Glossary and answer
+st.markdown(
+    f"<div style='display:flex;gap:17px;margin-top:13px;margin-bottom:7px;'>"
+    f"<div style='background:{PASTEL_PURPLE};border-radius:7px;min-width:200px;padding:9px 7px;'>"
+    f"<b>சொல் அகராதி / Glossary</b><br><input type='text' style='width:92%;padding:7px;border-radius:7px;'></div>"
+    f"<div style='background:{PASTEL_PURPLE};border-radius:7px;min-width:200px;padding:9px 7px;'>"
+    f"<b>சரியான பதில் / Correct</b><br><select style='width:88%;padding:7px;border-radius:7px;margin-top:3px;'><option>A</option><option>B</option><option>C</option><option>D</option></select></div>"
+    f"</div>", unsafe_allow_html=True
+)
+st.text_area("விளக்கங்கள் :", value="", height=48)
 st.markdown("</div>", unsafe_allow_html=True)
-st.info("Classic pastel color, touch-friendly SME panel for easy iPad review of bilingual Excel. Enhance/revise layout anytime.")
+
+# --------- Bottom: Reference panels ---------
+tamil_block = "உதாரணம்: ஒரு செல் என்றால் என்ன?"
+eng_block = "Sample: What is a cell?"
+
+st.markdown(f"""
+<div class="smepastel" style="height:88px;background:{PASTEL_PURPLE};padding:10px 7px 4px 16px;">
+<b>தமிழ் அசல்</b><br>{tamil_block}
+</div>
+<div class="smepastel" style="height:88px;background:{PASTEL_BLUE};padding:10px 7px 4px 16px;">
+<b>English</b><br>{eng_block}
+</div>
+""", unsafe_allow_html=True)
+
+st.info("Classic iPad SME panel: blocks/fields will auto-size for optimal iPad landscape fit. Further tweaks can be made after live review.")
