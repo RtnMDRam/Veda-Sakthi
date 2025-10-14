@@ -5,13 +5,11 @@ st.markdown("""
     <style>
     .block-container { padding-bottom: 0 !important; padding-top: 0.2rem !important; }
     .main { padding-bottom: 0 !important; margin-bottom: 0 !important; }
-    .option-row { display: flex; gap: 6px !important; margin-bottom: 0.15rem !important;}
-    .option-cell { flex: 1; }
-    .answer-row { display: flex; gap: 6px !important; margin-bottom: 0.18rem !important;}
-    .glossary-cell { width: 30%; }
-    .answer-cell { width: 70%; }
-    label, .stTextArea label { font-size: 0.91em !important; font-weight: 500 !important; margin-bottom: 0.07em !important; }
-    textarea[data-baseweb="textarea"] { min-height: 47px !important; font-size: 1em !important; }
+    .stTextArea label { font-size: 0.86em !important; font-weight: 500 !important; margin-bottom: -0.2em !important; }
+    .stTextArea { margin-bottom: -0.5em !important; }
+    textarea[data-baseweb="textarea"] { min-height: 44px !important; font-size: 0.98em !important; }
+    body, html { margin-bottom: 0 !important; padding-bottom: 0 !important;}
+    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -22,53 +20,44 @@ if uploaded_file is not None:
     st.success("File uploaded successfully!")
     row = df.iloc[0]
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
-    opts = str(row.get('விருப்பங்கள் ', '')).split('|')
-    opts = [o.strip() for o in opts if o.strip()]
-    # Default: split original options into 4 if possible, else fallback to blanks
-    opts = (opts + [""]*4)[:4]
 
-    # Editable Question (full width)
-    st.markdown('<div style="font-size:0.99em; font-weight:500; margin-bottom: 0.09em;">கேள்வி</div>', unsafe_allow_html=True)
-    tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=58, key="edit_q")
+    # Editable Question (single line above options)
+    st.markdown('<span style="font-size:0.86em;font-weight:500;">கேள்வி</span>', unsafe_allow_html=True)
+    tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=52, key="edit_q")
 
-    # Editable Options A & B (row)
-    st.markdown('<div style="font-size:0.98em; font-weight:500; margin-bottom: 0.04em;">விருப்பங்கள்</div>', unsafe_allow_html=True)
-    colA, colB = st.columns([1, 1], gap="small")
-    with colA:
-        st.markdown('<div style="font-size:0.92em; margin-bottom:-6px;">A</div>', unsafe_allow_html=True)
-        optA = st.text_area("", value=opts[0], key="optA", height=46)
-    with colB:
-        st.markdown('<div style="font-size:0.92em; margin-bottom:-6px;">B</div>', unsafe_allow_html=True)
-        optB = st.text_area("", value=opts[1], key="optB", height=46)
+    # Option editing: two rows of two side-by-side
+    st.markdown('<span style="font-size:0.86em;font-weight:500;">விருப்பங்கள்</span>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2, gap="small")
+    with col1:
+        optA = st.text_area("", value="", key="optA", height=40, label_visibility='collapsed')
+    with col2:
+        optB = st.text_area("", value="", key="optB", height=40, label_visibility='collapsed')
+    col3, col4 = st.columns(2, gap="small")
+    with col3:
+        optC = st.text_area("", value="", key="optC", height=40, label_visibility='collapsed')
+    with col4:
+        optD = st.text_area("", value="", key="optD", height=40, label_visibility='collapsed')
 
-    # Editable Options C & D (next row)
-    colC, colD = st.columns([1, 1], gap="small")
-    with colC:
-        st.markdown('<div style="font-size:0.92em; margin-bottom:-6px;">C</div>', unsafe_allow_html=True)
-        optC = st.text_area("", value=opts[2], key="optC", height=46)
-    with colD:
-        st.markdown('<div style="font-size:0.92em; margin-bottom:-6px;">D</div>', unsafe_allow_html=True)
-        optD = st.text_area("", value=opts[3], key="optD", height=46)
+    # Glossary/Answer (even row, matching Explanation height)
+    col5, col6 = st.columns(2, gap="small")
+    with col5:
+        st.markdown('<span style="font-size:0.86em;font-weight:500;">Glossary</span>', unsafe_allow_html=True)
+        gloss = st.text_area("", value="", key="gloss", height=40, label_visibility='collapsed')
+    with col6:
+        st.markdown('<span style="font-size:0.86em;font-weight:500;">Answer</span>', unsafe_allow_html=True)
+        ans = st.text_area("", value=row.get('பதில் ', ''), key="ans", height=40, label_visibility='collapsed')
 
-    # Answer/Glossary row (side by side, matching your green/blue separation)
-    colG, colAns = st.columns([1, 2], gap="small")
-    with colG:
-        st.markdown('<div style="font-size:0.92em; margin-bottom:-6px;">Glossary</div>', unsafe_allow_html=True)
-        gloss = st.text_area("", value="", key="gloss", height=42)
-    with colAns:
-        st.markdown('<div style="font-size:0.92em; margin-bottom:-6px;">Answer</div>', unsafe_allow_html=True)
-        ans = st.text_area("", value=row.get('பதில் ', ''), key="ans", height=42)
+    # Large Explanation area (full width)
+    st.markdown('<span style="font-size:0.86em;font-weight:500;">விளக்கம்</span>', unsafe_allow_html=True)
+    tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp")
 
-    # Editable Explanation
-    st.markdown('<div style="font-size:0.99em; font-weight:500; margin-bottom: 0.09em;">விளக்கம்</div>', unsafe_allow_html=True)
-    tamil_exp = st.text_area("", value=vilakkam_val, height=90, key="edit_exp")
-
-    # Reference display for checking below (no changes)
+    # Non-editable reference (unchanged)
     st.markdown("#### தமிழ்")
     st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
     st.markdown(f"**விருப்பங்கள்:** {row.get('விருப்பங்கள் ', '')}")
     st.markdown(f"**பதில்:** {row.get('பதில் ', '')}")
     st.markdown(f"**விளக்கம்:** {vilakkam_val}")
+
     st.markdown("#### English")
     st.markdown(f"**Question:** {row.get('question ', '')}")
     st.markdown(f"**Options:** {row.get('questionOptions', '')}")
