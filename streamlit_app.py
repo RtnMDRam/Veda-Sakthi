@@ -1,26 +1,28 @@
 import streamlit as st
 import pandas as pd
 
-# Minimal vertical space between content blocks, small subheadings, zero bottom margin
+# Use minimal vertical space for all content, super-compact headings, zero bottom padding
 st.markdown("""
     <style>
     .block-container h4 {
-        font-size: 1.1em !important;
+        font-size: 1.08em !important;
         font-weight: 600 !important;
-        margin-bottom: 0.12rem !important;
-        margin-top: 0.25rem !important;
+        margin-bottom: 0.09em !important;
+        margin-top: 0.19em !important;
     }
     .block-container p, .block-container ul, .block-container ol {
-        margin-bottom: 0.11rem !important;
-        margin-top: 0.11rem !important;
+        margin-bottom: 0.08em !important;
+        margin-top: 0.08em !important;
         font-size: 1.01em !important;
     }
-    .block-container { padding-bottom: 0rem !important; }
+    .block-container, .main, section.main {
+        padding-bottom: 0rem !important;
+    }
     footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Bilingual Content Preview")
+# Removed the title to maximize space for content and eliminate the top panel heading
 
 uploaded_file = st.file_uploader("Upload a bilingual Excel file (.xlsx)", type="xlsx")
 
