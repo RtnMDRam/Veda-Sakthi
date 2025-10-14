@@ -3,7 +3,7 @@ import pandas as pd
 
 st.markdown("""
     <style>
-    /* Editable area CSS */
+    /* Editable area */
     .block-container { padding-bottom: 0 !important; padding-top: 0.2rem !important; }
     .main { padding-bottom: 0 !important; margin-bottom: 0 !important; }
     .tight-label { 
@@ -15,34 +15,19 @@ st.markdown("""
         padding-bottom:0 !important; 
         padding-top:0 !important; 
     }
-    .stTextArea { 
-        margin-top: -0.44em !important; 
-        margin-bottom: -0.55em !important; 
-    }
-    textarea[data-baseweb="textarea"] { 
-        min-height: 44px !important; 
-        font-size: 0.98em !important; 
-    }
+    .stTextArea { margin-top: -0.44em !important; margin-bottom: -0.55em !important; }
+    textarea[data-baseweb="textarea"] { min-height: 44px !important; font-size: 0.98em !important; }
     .stTextArea label { display:none !important; }
     body, html { margin-bottom: 0 !important; padding-bottom: 0 !important;}
     footer {visibility: hidden;}
-    /* Non-editable ultra-compact reference block */
-    .cw-compact h4, .cw-compact h3 {
-        font-size: 1.04em !important;
-        font-weight: 700 !important;
-        margin-top: 0.05em !important;
-        margin-bottom: 0 !important;
-        line-height: 1.13 !important;
-        padding-top: 0; padding-bottom:0;
+    /* Reference block (absolute minimum margin) */
+    .cw-min {
+        line-height: 1.06 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1.01em !important;
     }
-    .cw-compact p, .cw-compact ul, .cw-compact ol, .cw-compact div, .cw-compact {
-        margin-bottom: 0 !important;
-        margin-top: 0.09em !important;
-        line-height: 1.10 !important;
-        font-size: 0.98em !important;
-        padding-top: 0; padding-bottom:0;
-    }
-    .cw-compact strong { font-weight: 600 !important; }
+    .cw-min strong { font-weight: 600 !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -77,30 +62,27 @@ if uploaded_file is not None:
     with cols[1]:
         st.markdown('<div class="tight-label">Answer</div>', unsafe_allow_html=True)
         ans = st.text_area("", value=row.get('பதில் ', ''), key="ans", height=40, label_visibility='collapsed')
-
     st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
 
-    # --- Reference (non-editable) block ultra-compact ---
-    st.markdown("""
-    <div class="cw-compact">
-    <h4>தமிழ்</h4>
-    <strong>கேள்வி:</strong> {}<br>
-    <strong>விருப்பங்கள்:</strong> {}<br>
-    <strong>பதில்:</strong> {}<br>
-    <strong>விளக்கம்:</strong> {}
+    # --- Non-editable reference block: ultra-compact (custom HTML for minimal vertical space) ---
+    st.markdown(f"""
+    <div class="cw-min">
+      <b>தமிழ்</b><br>
+      <strong>கேள்வி:</strong> {row.get('கேள்வி', '')}<br>
+      <strong>விருப்பங்கள்:</strong> {row.get('விருப்பங்கள் ', '')}<br>
+      <strong>பதில்:</strong> {row.get('பதில் ', '')}<br>
+      <strong>விளக்கம்:</strong> {vilakkam_val}
     </div>
-    <div class="cw-compact">
-    <h4>English</h4>
-    <strong>Question:</strong> {}<br>
-    <strong>Options:</strong> {}<br>
-    <strong>Answer:</strong> {}<br>
-    <strong>Explanation:</strong> {}
+    <div style="height: 0.3em;"></div>
+    <div class="cw-min">
+      <b>English</b><br>
+      <strong>Question:</strong> {row.get('question ', '')}<br>
+      <strong>Options:</strong> {row.get('questionOptions', '')}<br>
+      <strong>Answer:</strong> {row.get('answers ', '')}<br>
+      <strong>Explanation:</strong> {row.get('explanation', '')}
     </div>
-    """.format(
-        row.get('கேள்வி', ''), row.get('விருப்பங்கள் ', ''), row.get('பதில் ', ''), vilakkam_val,
-        row.get('question ', ''), row.get('questionOptions', ''), row.get('answers ', ''), row.get('explanation', '')
-    ), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 else:
     st.info("Please upload your bilingual Excel file to begin.")
