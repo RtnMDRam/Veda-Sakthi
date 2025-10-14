@@ -40,9 +40,9 @@ st.markdown("""
         box-sizing: border-box;
         background: none;
     }
-    /* Key trick: negative margin to "crumple" */
+    /* Key trick: negative margin for spacing */
     .crumple-transition {
-        margin-top: -0.9em !important;
+        margin-top: -0.85em !important;
         margin-bottom: 0 !important;
         padding: 0 !important;
         height: 0px !important;
@@ -67,6 +67,14 @@ st.markdown("""
         background: none;
     }
     .cw-40-fixed strong { font-weight: 600 !important; }
+    /* Style for the divider line above non-editable area */
+    .custom-divider {
+        border: none;
+        height: 2px;
+        background: #666;
+        margin: 0 0 4px 0;
+        width: 100%;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -106,8 +114,11 @@ if uploaded_file is not None:
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Absolutely no space: negative margin trick ---
+    # --- Minimal negative margin between blocks ---
     st.markdown('<div class="crumple-transition"></div>', unsafe_allow_html=True)
+
+    # --- Horizontal divider line (visible on any theme, grey, not too thick/thin) ---
+    st.markdown('<hr class="custom-divider">', unsafe_allow_html=True)
 
     # --- Non-editable block: exactly 40vh, centered if underfilled, scrolls if overflows ---
     st.markdown(f"""
