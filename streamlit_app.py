@@ -3,20 +3,42 @@ import pandas as pd
 
 st.markdown("""
     <style>
-    .block-container { padding-bottom: 0 !important; padding-top: 0.2rem !important; }
-    .main { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+    /* Compact block for reference (non-editable) display */
+    .mini-block h4, .mini-block h3 {
+        font-size: 1.04em !important;
+        font-weight: 700 !important;
+        margin-top: 0.02em !important;
+        margin-bottom: 0 !important;
+        line-height: 1.10 !important;
+        padding-top: 0 !important; padding-bottom:0 !important;
+    }
+    .mini-block p, .mini-block ul, .mini-block ol {
+        margin-bottom: 0 !important;
+        margin-top: 0.01em !important;
+        line-height: 1.10 !important;
+        font-size: 0.98em !important;
+        padding-top:0 !important; padding-bottom:0 !important;
+    }
+    .mini-block strong {
+        font-weight: 600 !important; 
+    }
+    .mini-block {
+        margin-top:0 !important; margin-bottom:0 !important;
+        padding-top:0 !important; padding-bottom:0 !important;
+    }
+/* Editable block: ultra-tight labels and text area spacing */
     .tight-label { 
         font-size: 0.85em !important; 
         font-weight: 500 !important; 
-        line-height: 1.08; 
-        margin-bottom: -0.34em !important; 
-        margin-top: -0.51em !important;
+        line-height: 1.05; 
+        margin-bottom: -0.37em !important; 
+        margin-top: -0.50em !important;
         padding-bottom:0 !important; 
         padding-top:0 !important; 
     }
     .stTextArea { 
         margin-top: -0.44em !important; 
-        margin-bottom: -0.55em !important; 
+        margin-bottom: -0.52em !important; 
     }
     textarea[data-baseweb="textarea"] { 
         min-height: 44px !important; 
@@ -36,11 +58,10 @@ if uploaded_file is not None:
     row = df.iloc[0]
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
 
-    # Question
+    # --- Editable Ultra-Compact Tamil Area ---
     st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
     tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=52, key="edit_q", label_visibility='collapsed')
 
-    # Options 2x2
     st.markdown('<div class="tight-label">விருப்பங்கள்</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2, gap="small")
     with col1:
@@ -53,7 +74,6 @@ if uploaded_file is not None:
     with col4:
         optD = st.text_area("", value="", key="optD", height=40, label_visibility='collapsed')
 
-    # Glossary + Answer in a row
     cols = st.columns(2, gap="small")
     with cols[0]:
         st.markdown('<div class="tight-label">Glossary</div>', unsafe_allow_html=True)
@@ -62,22 +82,25 @@ if uploaded_file is not None:
         st.markdown('<div class="tight-label">Answer</div>', unsafe_allow_html=True)
         ans = st.text_area("", value=row.get('பதில் ', ''), key="ans", height=40, label_visibility='collapsed')
 
-    # Explanation - largest, tightly packed
     st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
 
-    # Reference block unchanged
-    st.markdown("#### தமிழ்")
-    st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
-    st.markdown(f"**விருப்பங்கள்:** {row.get('விருப்பங்கள் ', '')}")
-    st.markdown(f"**பதில்:** {row.get('பதில் ', '')}")
-    st.markdown(f"**விளக்கம்:** {vilakkam_val}")
+    # --- Ultra-compact Non-editable Reference Tamil+English Block ---
+    st.markdown('<div class="mini-block">', unsafe_allow_html=True)
+    st.markdown("<h4>தமிழ்</h4>", unsafe_allow_html=True)
+    st.markdown(f"<strong>கேள்வி:</strong> {row.get('கேள்வி', '')}", unsafe_allow_html=True)
+    st.markdown(f"<strong>விருப்பங்கள்:</strong> {row.get('விருப்பங்கள் ', '')}", unsafe_allow_html=True)
+    st.markdown(f"<strong>பதில்:</strong> {row.get('பதில் ', '')}", unsafe_allow_html=True)
+    st.markdown(f"<strong>விளக்கம்:</strong> {vilakkam_val}", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("#### English")
-    st.markdown(f"**Question:** {row.get('question ', '')}")
-    st.markdown(f"**Options:** {row.get('questionOptions', '')}")
-    st.markdown(f"**Answer:** {row.get('answers ', '')}")
-    st.markdown(f"**Explanation:** {row.get('explanation', '')}")
+    st.markdown('<div class="mini-block">', unsafe_allow_html=True)
+    st.markdown("<h4>English</h4>", unsafe_allow_html=True)
+    st.markdown(f"<strong>Question:</strong> {row.get('question ', '')}", unsafe_allow_html=True)
+    st.markdown(f"<strong>Options:</strong> {row.get('questionOptions', '')}", unsafe_allow_html=True)
+    st.markdown(f"<strong>Answer:</strong> {row.get('answers ', '')}", unsafe_allow_html=True)
+    st.markdown(f"<strong>Explanation:</strong> {row.get('explanation', '')}", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     st.info("Please upload your bilingual Excel file to begin.")
