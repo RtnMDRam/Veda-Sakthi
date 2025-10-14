@@ -5,12 +5,23 @@ st.markdown("""
     <style>
     .block-container {
         padding-top: 0 !important;
-        padding-bottom: 0 !important;
         margin-top: 0 !important;
-        margin-bottom: 0 !important;
     }
     header, footer { display: none !important; }
-    .main { margin-top: 0 !important; margin-bottom: 0 !important; }
+    .main { margin-top: 0 !important; }
+    .editable-vh45 {
+        height: 45vh !important;
+        min-height: 45vh !important;
+        max-height: 45vh !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        box-sizing: border-box;
+        background: none;
+    }
     .tight-label {
         font-size: 0.85em !important;
         font-weight: 500 !important;
@@ -29,17 +40,6 @@ st.markdown("""
         font-size: 0.98em !important;
     }
     .stTextArea label { display:none !important; }
-    .editable-vh45 {
-        height: 45vh !important;
-        min-height: 45vh !important;
-        max-height: 45vh !important;
-        overflow-y: auto;
-        overflow-x: hidden;
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-        box-sizing: border-box;
-        background: none;
-    }
     .cw-40-fixed {
         height: 40vh !important;
         min-height: 40vh !important;
@@ -68,7 +68,7 @@ if uploaded_file is not None:
     row = df.iloc[0]
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
 
-    # Editable block
+    # Editable block (no bottom margin/padding)
     st.markdown('<div class="editable-vh45">', unsafe_allow_html=True)
     st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
     tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=52, key="edit_q", label_visibility='collapsed')
@@ -94,9 +94,9 @@ if uploaded_file is not None:
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Non-editable block, with divider INSIDE and IMMEDIATELY BEFORE தமிழ்
+    # Reference/display block (tight, yellow line at very top above தமிழ்)
     st.markdown(f"""
-    <div class="cw-40-fixed">
+    <div class="cw-40-fixed" style="margin-top:0!important; padding-top:0!important;">
         <hr style="height:1.8px;border:none;background:#666;margin:0 0 0 0;padding:0;">
         <div style="margin-top:0;margin-bottom:0;"><b>தமிழ்</b></div>
         <div><strong>கேள்வி:</strong> {row.get('கேள்வி', '')}</div>
