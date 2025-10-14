@@ -2,168 +2,144 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Pastel colors and panel widths (adjust as needed)
-SME_BG = "#F5F6F9"
-PASTEL_GREEN = "#CEF3D6"
-PASTEL_BLUE = "#CFE8F6"
-PASTEL_PURPLE = "#E6D4F1"
-PASTEL_GREY = "#F7F8FA"
-BORDER_COLOR = "#B0B8D1"
-OFF_WHITE = "#FCFCFF"
+PASTEL_GREEN = "#D2F0D4"
+PASTEL_BLUE = "#D5E6FA"
+PASTEL_PURPLE = "#E5D7F7"
+BORDER_COLOR = "#A3B1C6"
+OFF_WHITE = "#F9F9FB"
 PANEL_W = 1024
-BUTTON_H = 42
 
 st.set_page_config(page_title="SME iPad Panel", layout="centered")
 
 st.markdown(f"""
     <style>
     html, body, [data-testid="stAppViewContainer"] {{
-        background: {SME_BG} !important;
+        background: {OFF_WHITE} !important;
     }}
     .block-container {{
         max-width: {PANEL_W}px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding-top: 8px !important;
-        padding-bottom: 6px !important;
+        margin:auto !important;
+        padding-top:6px !important;
+        padding-bottom:0 !important;
     }}
-    .smepastel {{
-        border:2.5px solid {BORDER_COLOR}; border-radius:14px; background: {PASTEL_GREY}; 
-        margin-bottom:18px; padding:0;
+    .sme-headrow {{
+        display:flex;align-items:center;width:100%;padding:6px 0 0 0;
     }}
-    .smepane-title {{
-        background: {PASTEL_GREEN}; border-radius:14px 14px 0 0; 
-        padding:12px 35px 5px 18px; display:flex; 
-        justify-content:space-between; align-items:center;
-        font-size:1.15rem;font-weight:700;
+    .sme-title {{
+        background:{PASTEL_GREEN};font-size:1.13rem;font-weight:700;
+        padding:8px 14px 8px 18px;border-radius:12px 12px 0 0;width:65%;
+        border:2px solid {BORDER_COLOR};border-bottom:0;
     }}
-    .sme-btn-bar button {{
-        font-size:1.04rem;margin-right:8px;height:{BUTTON_H}px;
-        border-radius:8px;border:none;font-weight:600;padding:0 19px;
-        background: {PASTEL_PURPLE};color:#513568;
+    .sme-date {{
+        background:{PASTEL_GREEN};padding:8px 18px;font-size:1.02rem;
+        border-radius:0 12px 0 0; border:2px solid {BORDER_COLOR};border-bottom:0;border-left:0;width:35%;text-align:right;
     }}
-    .sme-btn-bar button.save {{
-        background:{PASTEL_GREEN};color:#176655;
+    .sme-uploadbar {{
+        background:{PASTEL_BLUE};display:flex;gap:18px;
+        padding:7px 13px 7px 13px;width:100%;
+        border:2px solid {BORDER_COLOR};border-top:0;border-bottom:0;
     }}
-    .sme-btn-bar button.next {{
-        background:{PASTEL_BLUE};color:#194365;
+    .sme-uploadbox, .sme-filebox {{
+        flex:1;background:#f7fbfd;border-radius:6px;
+        border:1.3px solid #abc2d1;padding:4px 8px;min-width:0;
     }}
-    .sme-btn-bar button.cont {{
-        background:{PASTEL_PURPLE};color:#513568;
+    .sme-filebox label, .sme-uploadbox label {{
+        font-size:0.95rem;font-weight:500;margin-bottom:2px;display:block;
     }}
-    .sme-upload-bar {{
-        display: flex; gap: 16px; padding: 18px 10px; background: {PASTEL_BLUE}; border-radius: 0 0 14px 14px; margin-bottom:4px;
-        align-items:center; min-height:54px;
+    .sme-btnbar {{
+        background:{PASTEL_PURPLE};display:flex;gap:8px;
+        padding:8px 8px 4px 8px;width:100%;
+        border:2px solid {BORDER_COLOR};border-top:0;border-radius:0 0 12px 12px;
     }}
-    .sme-upload-link {{
-        background: #ecf6fa; border:1.5px solid #a6b4ca; border-radius:7px; padding:8px 6px; font-size:1.02rem; width:300px;
+    .sme-btnbar button {{
+        width:calc(100%/7 - 6px);min-width:54px;font-size:1rem;height:38px;
+        background:#fff;color:#623d90;border:1.4px solid {BORDER_COLOR};
+        border-radius:7px;font-weight:600;padding:0 2px;
     }}
-    .sme-upload-file {{ flex:2; }}
-    .sme-load-btn {{
-        background: #c7f8eb; color:#14696f; border-radius:7px; min-width:70px;
-        font-size:1.07rem; height:39px; border:none; font-weight:700; margin-left:10px;
+    .sme-q-edit {{width:100%;background:{OFF_WHITE};padding:0;margin:0;}}
+    .sme-options-row {{
+        display:flex;gap:8px;margin:2px 0 0 0;
+        background:transparent;
+    }}
+    .sme-option {{
+        flex:1;padding:7px 6px 7px 10px;font-size:1.05rem;border-radius:6px;
+        min-width:0;text-align:left;
+        border:1.3px solid {BORDER_COLOR};background:{PASTEL_GREEN};
+    }}
+    .sme-option.b {{background:{PASTEL_GREEN};}}
+    .sme-option.c, .sme-option.d {{background:{PASTEL_BLUE};}}
+    .sme-glossdiv {{
+        display:flex;gap:10px;padding:4px 0;
+    }}
+    .sme-glossbox,.sme-ansbox {{
+        flex:1;padding:5px 7px;background:{PASTEL_PURPLE};
+        border-radius:7px;min-width:0;font-size:1.02rem;border:1.3px solid {BORDER_COLOR};
+    }}
+    .sme-exp {{background:#fff;margin:0;border-radius:7px;border:1.3px solid {BORDER_COLOR};padding:2px 7px 2px 5px;}}
+    .sme-ref-tam, .sme-ref-eng {{
+        margin-top:0;margin-bottom:0;padding:4px 9px 4px 12px;
+        border:1.8px solid {BORDER_COLOR};background:{PASTEL_PURPLE};
+        border-radius:8px 8px 0 0;font-size:1.05rem;
+    }}
+    .sme-ref-eng {{
+        background:{PASTEL_BLUE};border-radius:0 0 8px 8px;border-top:0;
+        margin-top:0;
     }}
     </style>
 """, unsafe_allow_html=True)
 
-# ----------- Top Layer 1: Title/date/time
 now = datetime.now()
 st.markdown(
-    f"""
-    <div class="smepane-title" style="width:{PANEL_W}px;margin-bottom:0;">
-        <span>Veda-Sakthi SME Panel <span style='font-weight:400; font-size:0.89rem;'>&nbsp;&nbsp;| Subject Matter Expert (SME) Review</span></span>
-        <span>
-            {now.strftime("“%Y-%b-%d”")} &nbsp;|&nbsp; {now.strftime("“%H:%M”")}
-        </span>
-    </div>
-    """, unsafe_allow_html=True
+    f"""<div class="sme-headrow">
+        <div class="sme-title">Veda-Sakthi SME Panel</div>
+        <div class="sme-date">{now.strftime("“%Y-%b-%d”")} &nbsp;|&nbsp; {now.strftime("“%H:%M”")}</div>
+    </div>""", unsafe_allow_html=True
 )
 
-# ----------- Top Layer 2: Upload area (Paste link + local upload + Load)
-st.markdown(f'<div class="smepastel" style="padding:0;">', unsafe_allow_html=True)
-upload_cols = st.columns([2, 2, 1])
-with upload_cols[0]:
-    drive_link = st.text_input(
-        "Paste Drive/Excel Link here", key="upload_drive_link",
-        placeholder="https://drive.google.com/...",
-        help="Paste link to an Excel/CSV file shared with link access."
-    )
-with upload_cols[1]:
-    uploaded_file = st.file_uploader(
-        "Or select file from device", type=["xlsx", "xls", "csv"], key="upload_local_file"
-    )
-with upload_cols[2]:
-    if st.button("LOAD", key="load_btn_panel"):
-        st.success("File/Link load requested (simulate logic here)")
+st.markdown('<div class="sme-uploadbar">', unsafe_allow_html=True)
+col_upload, col_file = st.columns([1,1])
+with col_upload:
+    drive_link = st.text_input("Paste Drive/Excel Link:", key="drive_link",placeholder="https://drive.google.com/...")
+with col_file:
+    uploaded_file = st.file_uploader("Browse file from device", type=["xlsx","xls","csv"], key="file_up")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Optionally, show what was loaded for confirmation.
-if drive_link:
-    st.markdown(
-        f"<div style='background:#eaf7e6;padding:6px 8px;border-radius:7px;font-size:0.99rem;'>Loaded file link: {drive_link}</div>",
-        unsafe_allow_html=True)
-if uploaded_file is not None:
-    st.markdown(
-        f"<div style='background:#f9f6e4;padding:6px 8px;border-radius:7px;font-size:0.99rem;'>File uploaded: {uploaded_file.name}</div>",
-        unsafe_allow_html=True
-    )
+# Button bar tightly below
+st.markdown('<div class="sme-btnbar">', unsafe_allow_html=True)
+btn1, btn2, btn3, btn4, btn5, btn6, btn7 = st.columns(7)
+with btn1: st.button("Hi! Glossary")
+with btn2: st.button("Save & Cont.")
+with btn3: st.button("Row #A")
+with btn4: st.button("_id Number")
+with btn5: st.button("Row #Z")
+with btn6: st.button("Save & Next")
+with btn7: st.button("Save File")
+st.markdown('</div>', unsafe_allow_html=True)
 
-# ----------- Top Layer 3: Button bar
-st.markdown(f'<div class="smepastel"><div class="sme-btn-bar" style="padding:12px 18px 8px 18px;">', unsafe_allow_html=True)
-colB = st.columns([1,1,1,1,1,1,1])
-with colB[0]:
-    st.button("Hi! Glossary", key="btn_glossary")
-with colB[1]:
-    st.button("Save & Cont.", key="btn_savecont", help="Save and continue editing")
-with colB[2]:
-    st.button("Row #A", key="btn_rowA")
-with colB[3]:
-    st.button("_id Number", key="btn_id")
-with colB[4]:
-    st.button("Row #Z", key="btn_rowZ")
-with colB[5]:
-    st.button("Save & Next", key="btn_next")
-with colB[6]:
-    st.button("Save File", key="btn_savefile")
-st.markdown("</div></div>", unsafe_allow_html=True)
+# SME main edit block, all fields close together
+st.markdown('<div class="sme-q-edit">', unsafe_allow_html=True)
+smq_edit = st.text_area("Edit Tamil (editable)", value="உதாரணம்: ஒரு செல் என்றால் என்ன?", height=48)
+st.markdown('</div>', unsafe_allow_html=True)
+# MCQ option block tight rows
+st.markdown('<div class="sme-options-row">', unsafe_allow_html=True)
+o1, o2, o3, o4 = st.columns(4)
+with o1: st.markdown('<div class="sme-option">Auto A<br>Option A</div>',unsafe_allow_html=True)
+with o2: st.markdown('<div class="sme-option b">Auto B<br>Option B</div>',unsafe_allow_html=True)
+with o3: st.markdown('<div class="sme-option c">Auto C<br>Option C</div>',unsafe_allow_html=True)
+with o4: st.markdown('<div class="sme-option d">Auto D<br>Option D</div>',unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+# Glossary + Answer
+st.markdown('<div class="sme-glossdiv">', unsafe_allow_html=True)
+gloss = st.text_input("சொல் அகராதி / Glossary")
+with st.container():
+    st.markdown('<div class="sme-ansbox"><b>சரியான பதில் / Correct:</b> ', unsafe_allow_html=True)
+    answ = st.selectbox("",["A","B","C","D"], key="sel_ans")
+    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+# Explanation compact
+explan = st.text_area("விளக்கங்கள் :", height=44)
+st.markdown('<br>', unsafe_allow_html=True)
 
-# ---- Central Editing/Table Panel ----
-st.markdown(
-    f"<div class='smepastel' style='min-height:390px;padding:25px 14px 20px 14px;'>"
-    f"<div style='font-size:1.15rem;font-weight:600;margin-bottom:7px;'>கேள்வி :</div>", unsafe_allow_html=True)
-tm_edit = st.text_area("Edit Tamil", value="உதாரணம்: ஒரு செல் என்றால் என்ன?", height=52)
-
-# MCQ options (A+B, C+D) and glossary/answer
-mcq1, mcq2 = st.columns([1,1])
-with mcq1: st.markdown(f"<div style='background:{PASTEL_GREEN};padding:13px 8px;border-radius:8px;'>Auto 'A'<br>Option A</div>",unsafe_allow_html=True)
-with mcq2: st.markdown(f"<div style='background:{PASTEL_GREEN};padding:13px 8px;border-radius:8px;'>Auto 'B'<br>Option B</div>",unsafe_allow_html=True)
-mcq3, mcq4 = st.columns([1,1])
-with mcq3: st.markdown(f"<div style='background:{PASTEL_BLUE};padding:13px 8px;border-radius:8px;'>Auto 'C'<br>Option C</div>",unsafe_allow_html=True)
-with mcq4: st.markdown(f"<div style='background:{PASTEL_BLUE};padding:13px 8px;border-radius:8px;'>Auto 'D'<br>Option D</div>",unsafe_allow_html=True)
-
-# Glossary and answer
-st.markdown(
-    f"<div style='display:flex;gap:17px;margin-top:13px;margin-bottom:7px;'>"
-    f"<div style='background:{PASTEL_PURPLE};border-radius:7px;min-width:200px;padding:9px 7px;'>"
-    f"<b>சொல் அகராதி / Glossary</b><br><input type='text' style='width:92%;padding:7px;border-radius:7px;'></div>"
-    f"<div style='background:{PASTEL_PURPLE};border-radius:7px;min-width:200px;padding:9px 7px;'>"
-    f"<b>சரியான பதில் / Correct</b><br><select style='width:88%;padding:7px;border-radius:7px;margin-top:3px;'><option>A</option><option>B</option><option>C</option><option>D</option></select></div>"
-    f"</div>", unsafe_allow_html=True
-)
-st.text_area("விளக்கங்கள் :", value="", height=48)
-st.markdown("</div>", unsafe_allow_html=True)
-
-# --------- Bottom: Reference panels ---------
-tamil_block = "உதாரணம்: ஒரு செல் என்றால் என்ன?"
-eng_block = "Sample: What is a cell?"
-
-st.markdown(f"""
-<div class="smepastel" style="height:88px;background:{PASTEL_PURPLE};padding:10px 7px 4px 16px;">
-<b>தமிழ் அசல்</b><br>{tamil_block}
-</div>
-<div class="smepastel" style="height:88px;background:{PASTEL_BLUE};padding:10px 7px 4px 16px;">
-<b>English</b><br>{eng_block}
-</div>
-""", unsafe_allow_html=True)
-
-st.info("Classic iPad SME panel: blocks/fields will auto-size for optimal iPad landscape fit. Further tweaks can be made after live review.")
+# Reference blocks: absolutely no vertical space between!
+st.markdown(f'<div class="sme-ref-tam"><b>தமிழ் அசல்</b> &nbsp; {smq_edit}</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="sme-ref-eng"><b>English</b> &nbsp; Sample: What is a cell?</div>', unsafe_allow_html=True)
