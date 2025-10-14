@@ -1,21 +1,22 @@
 import streamlit as st
 import pandas as pd
 
-# Minimal vertical space between content blocks, remove bottom padding too
+# Minimize space between blocks and shrink headings
 st.markdown("""
     <style>
     .block-container h2, .block-container h3 {
-        margin-bottom: 0.25rem !important;
-        margin-top: 0.4rem !important;
+        font-size: 1.05rem !important;
+        margin-bottom: 0.20rem !important;
+        margin-top: 0.25rem !important;
     }
-    .block-container p {
-        margin-bottom: 0.1rem !important;
-        margin-top: 0.1rem !important;
+    .block-container p, .block-container ul, .block-container ol {
+        margin-bottom: 0.10rem !important;
+        margin-top: 0.10rem !important;
+        font-size: 1.0rem;
     }
-    .block-container {
-        padding-bottom: 0rem !important;
-    }
-    footer {visibility: hidden;} /* Optional: Hide Streamlit footer bar */
+    .block-container { padding-bottom: 0rem !important; }
+    .css-18ni7ap { padding-bottom: 0rem !important; }
+    footer { visibility: hidden; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -30,14 +31,14 @@ if uploaded_file is not None:
     row = df.iloc[0]
 
     with st.container():
-        st.header("தமிழ்")
+        st.markdown("#### தமிழ்")
         st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
         st.markdown(f"**விருப்பங்கள்:** {row.get('விருப்பங்கள் ', '')}")
         st.markdown(f"**பதில்:** {row.get('பதில் ', '')}")
         st.markdown(f"**விளக்கம்:** {row.get('விளக்கம்', '')}")
 
     with st.container():
-        st.header("English")
+        st.markdown("#### English")
         st.markdown(f"**Question:** {row.get('question ', '')}")
         st.markdown(f"**Options:** {row.get('questionOptions', '')}")
         st.markdown(f"**Answer:** {row.get('answers ', '')}")
