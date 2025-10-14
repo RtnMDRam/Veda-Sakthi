@@ -50,7 +50,7 @@ st.markdown("""
         font-size: 1.035em !important;
         line-height: 1.14 !important;
         margin: 0 !important;
-        padding: 0 0.09em 0.28em 0.09em !important;  /* ZERO top padding! */
+        padding: 0 0.09em 0.28em 0.09em !important;  /* no top padding! */
         overflow-y: auto;
         overflow-x: hidden;
         box-sizing: border-box;
@@ -68,11 +68,10 @@ if uploaded_file is not None:
     row = df.iloc[0]
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
 
-    # --- Editable block: exactly 45vh, scrollable, top ---
+    # Editable block
     st.markdown('<div class="editable-vh45">', unsafe_allow_html=True)
     st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
     tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=52, key="edit_q", label_visibility='collapsed')
-
     st.markdown('<div class="tight-label">விருப்பங்கள்</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2, gap="small")
     with col1:
@@ -84,7 +83,6 @@ if uploaded_file is not None:
         optC = st.text_area("", value="", key="optC", height=40, label_visibility='collapsed')
     with col4:
         optD = st.text_area("", value="", key="optD", height=40, label_visibility='collapsed')
-
     cols = st.columns(2, gap="small")
     with cols[0]:
         st.markdown('<div class="tight-label">Glossary</div>', unsafe_allow_html=True)
@@ -96,16 +94,16 @@ if uploaded_file is not None:
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Horizontal divider line: zero margin, zero padding, thin ---
+    # Divider line: HUG the next heading, NO space below!
     st.markdown(
         '<hr style="height:1.3px;border:none;background:#666;margin:0 0 0 0;padding:0;">',
         unsafe_allow_html=True
     )
 
-    # --- Non-editable block: exactly 40vh, centered if underfilled, scrolls if overflows ---
+    # The "தமிழ்" heading comes next, right after the yellow line
     st.markdown(f"""
     <div class="cw-40-fixed">
-        <div><b>தமிழ்</b></div>
+        <div style="margin-top:0;margin-bottom:0;"><b>தமிழ்</b></div>
         <div><strong>கேள்வி:</strong> {row.get('கேள்வி', '')}</div>
         <div><strong>விருப்பங்கள்:</strong> {row.get('விருப்பங்கள் ', '')}</div>
         <div><strong>பதில்:</strong> {row.get('பதில் ', '')}</div>
