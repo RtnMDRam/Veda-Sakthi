@@ -6,10 +6,10 @@ st.markdown("""
 <style>
 .outer-panel-border {
     position: fixed;
-    top: 6vh;
-    left: 4vw;
-    width: 92vw;
-    height: 88vh;
+    top: 3vh;
+    left: 3vw;
+    width: 94vw;
+    height: 94vh;
     border: 4px solid #2a3a88;
     border-radius: 18px;
     background: #fff;
