@@ -5,7 +5,7 @@ st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
 st.markdown("""
 <style>
 .outer-panel-border {
-    width: 2500px;
+    width: 1500px;
     height: 2200px;
     margin: 0 auto;
     border: 4px solid #2a3a88;
