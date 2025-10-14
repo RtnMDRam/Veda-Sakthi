@@ -1,28 +1,36 @@
 import streamlit as st
 import pandas as pd
 
-# Use minimal vertical space for all content, super-compact headings, zero bottom padding
+# Minimal space throughout the app, especially bottom and headings
 st.markdown("""
     <style>
+    .block-container {
+        padding-bottom: 0rem !important;
+        padding-top: 1rem !important;
+    }
     .block-container h4 {
         font-size: 1.08em !important;
         font-weight: 600 !important;
         margin-bottom: 0.09em !important;
-        margin-top: 0.19em !important;
+        margin-top: 0.15em !important;
     }
     .block-container p, .block-container ul, .block-container ol {
         margin-bottom: 0.08em !important;
         margin-top: 0.08em !important;
         font-size: 1.01em !important;
     }
-    .block-container, .main, section.main {
+    .main {
         padding-bottom: 0rem !important;
+        margin-bottom: 0rem !important;
+    }
+    body, html {
+        margin-bottom: 0rem !important;
+        padding-bottom: 0rem !important;
+        height: 100vh !important;
     }
     footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
-
-# Removed the title to maximize space for content and eliminate the top panel heading
 
 uploaded_file = st.file_uploader("Upload a bilingual Excel file (.xlsx)", type="xlsx")
 
@@ -32,6 +40,7 @@ if uploaded_file is not None:
 
     row = df.iloc[0]
 
+    # No extra separator before, between, or after containers
     with st.container():
         st.markdown("#### தமிழ்")
         st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
