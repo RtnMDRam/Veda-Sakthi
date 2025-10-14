@@ -1,27 +1,34 @@
 import streamlit as st
 import pandas as pd
 
-# Read the file (assuming it's loaded as 'bl_bio_bot_unit_4_chap_9_the_tissues_qb.xlsx')
-df = pd.read_excel('bl_bio_bot_unit_4_chap_9_the_tissues_qb.xlsx', sheet_name="Cleaned_Bilingual")
+st.title("Bilingual Content Preview")
 
-# Pick the first row to display
-row = df.iloc[0]
+uploaded_file = st.file_uploader("Upload a bilingual Excel file (.xlsx)", type="xlsx")
 
-# Layout: ENGLISH version (bottom box)
-with st.container():
-    st.markdown("### English Version (Bottom Box)")
-    st.markdown(f"**Question:** {row['question ']}") 
-    st.markdown(f"**Options:** {row['questionOptions']}")
-    st.markdown(f"**Answer:** {row['answers ']}")
-    st.markdown(f"**Explanation:** {row['explanation']}")
-    st.markdown("---")
+if uploaded_file is not None:
+    df = pd.read_excel(uploaded_file)
+    st.success("File uploaded successfully!")
 
-# Layout: TAMIL version (box above English)
-with st.container():
-    st.markdown("### Tamil Version (Above Box)")
-    st.markdown(f"**[translate:கேள்வி]:** [translate:{row['கேள்வி']}]")
-    st.markdown(f"**[translate:விருப்பங்கள்]:** [translate:{row['விருப்பங்கள் ']}]")
-    st.markdown(f"**[translate:பதில்]:** [translate:{row['பதில் ']}]")
-    st.markdown(f"**[translate:விளக்கம்]:** [translate:{row['விளக்கம் ']}]")
-    st.markdown("---")
+    # Show first row only for now (you can expand to more rows as needed)
+    row = df.iloc[0]
 
+    # Tamil box (above)
+    with st.container():
+        st.subheader("Tamil Version (Above)")
+        st.markdown(f"**[translate:கேள்வி]:** [translate:{row.get('கேள்வி', '')}]")
+        st.markdown(f"**[translate:விருப்பங்கள்]:** [translate:{row.get('விருப்பங்கள் ', '')}]")
+        st.markdown(f"**[translate:பதில்]:** [translate:{row.get('பதில் ', '')}]")
+        st.markdown(f"**[translate:விளக்கம்]:** [translate:{row.get('விளக்கம் ', '')}]")
+        st.markdown("---")
+
+    # English box (bottom)
+    with st.container():
+        st.subheader("English Version (Bottom)")
+        st.markdown(f"**Question:** {row.get('question ', '')}")
+        st.markdown(f"**Options:** {row.get('questionOptions', '')}")
+        st.markdown(f"**Answer:** {row.get('answers ', '')}")
+        st.markdown(f"**Explanation:** {row.get('explanation', '')}")
+        st.markdown("---")
+
+else:
+    st.info("Please upload your bilingual Excel file to begin.")
