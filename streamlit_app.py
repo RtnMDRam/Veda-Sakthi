@@ -15,7 +15,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 PANEL_HEIGHT = 950
-PANEL_WIDTH = 750
+PANEL_WIDTH = 700
 INNER_TOP = 10
 def y(percent):
     return INNER_TOP + (PANEL_HEIGHT-2*INNER_TOP) * percent / 100
