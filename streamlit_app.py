@@ -1,27 +1,18 @@
 import streamlit as st
 import pandas as pd
 
-# Custom CSS to minimize vertical space
+# CSS to minimize space between elements
 st.markdown("""
-    <style>
-    /* Reduce spacing between markdown blocks */
-    .block-container h2, .block-container h3 {
-        margin-bottom: 0.25rem;
-        margin-top: 0.5rem;
-    }
-    .block-container p {
-        margin-bottom: 0.15rem;
-        margin-top: 0.15rem;
-    }
-    .block-container ul, .block-container ol {
-        margin-block-start: 0.2rem;
-        margin-block-end: 0.2rem;
-    }
-    /* Remove space after containers */
-    .block-container > div {
-        margin-bottom: 0.3rem;
-    }
-    </style>
+<style>
+.block-container h2, .block-container h3 {
+    margin-top: 0.25em !important;
+    margin-bottom: 0.18em !important;
+}
+.block-container p {
+    margin-top: 0.09em !important;
+    margin-bottom: 0.09em !important;
+}
+</style>
 """, unsafe_allow_html=True)
 
 st.title("Bilingual Content Preview")
@@ -32,10 +23,8 @@ if uploaded_file is not None:
     df = pd.read_excel(uploaded_file)
     st.success("File uploaded successfully!")
 
-    # Show first row only (for now)
     row = df.iloc[0]
 
-    # தமிழ் (top box, tight spacing)
     with st.container():
         st.header("[translate:தமிழ்]")
         st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
@@ -43,7 +32,6 @@ if uploaded_file is not None:
         st.markdown(f"**பதில்:** {row.get('பதில் ', '')}")
         st.markdown(f"**விளக்கம்:** {row.get('விளக்கம் ', '')}")
 
-    # English (bottom box, tight spacing)
     with st.container():
         st.header("English")
         st.markdown(f"**Question:** {row.get('question ', '')}")
