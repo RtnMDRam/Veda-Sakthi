@@ -4,8 +4,8 @@ import pandas as pd
 st.markdown("""
     <style>
     .block-container {
-        padding-top: 0.08rem !important;
-        padding-bottom: 0.1rem !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
         margin-top: 0 !important;
         margin-bottom: 0 !important;
     }
@@ -35,18 +35,20 @@ st.markdown("""
         max-height: 45vh !important;
         overflow-y: auto;
         overflow-x: hidden;
-        margin-bottom: 0;
-        padding-bottom: 0;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
         box-sizing: border-box;
         background: none;
     }
-    /* Crumple transition from editable to non-editable area */
-    .zero-gap-down {
-        height:0.06em !important;
-        padding:0 !important;
-        margin: 0 !important;
+    /* Key trick: negative margin to "crumple" */
+    .crumple-transition {
+        margin-top: -0.9em !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        height: 0px !important;
         border: none !important;
         background: none !important;
+        line-height: 0 !important;
     }
     .cw-40-fixed {
         height: 40vh !important;
@@ -104,8 +106,8 @@ if uploaded_file is not None:
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Remove all space: bring non-editable area as close as possible ---
-    st.markdown('<div class="zero-gap-down"></div>', unsafe_allow_html=True)
+    # --- Absolutely no space: negative margin trick ---
+    st.markdown('<div class="crumple-transition"></div>', unsafe_allow_html=True)
 
     # --- Non-editable block: exactly 40vh, centered if underfilled, scrolls if overflows ---
     st.markdown(f"""
