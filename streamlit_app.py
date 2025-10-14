@@ -1,14 +1,14 @@
 import streamlit as st
 
-# Partition percentages (must total 100)
+# Partition percentages (must sum to 100 for proportional grid)
 part_percentages = [3, 4, 8, 45, 20, 20]
 row_heights = ' '.join([f'{p}fr' for p in part_percentages])
 
 st.markdown(
     f"""
     <div style="
-        width: 95vw;                 /* 95% of browser width */
-        height: 95vh;                /* 95% of browser height */
+        width: 90vw;                 /* 90% of the viewport width */
+        height: 90vh;                /* 90% of the viewport height */
         border: 4px solid navy;
         border-radius: 20px;
         background: white;
@@ -17,6 +17,7 @@ st.markdown(
         margin: auto;
         box-sizing: border-box;
         overflow: hidden;
+        position: relative;
     ">
         <div style="border-bottom: 2px solid red;"></div>
         <div style="border-bottom: 2px solid red;"></div>
