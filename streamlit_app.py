@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# CSS: eliminate all default Streamlit spacing everywhere
+# Minimal and bottom-docked display as before
 st.markdown("""
     <style>
     .block-container { padding-bottom: 0 !important; padding-top: 0.2rem !important; }
@@ -21,10 +21,20 @@ if uploaded_file is not None:
     row = df.iloc[0]
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
 
-    # Add a big vertical spacer at the top (e.g., 18-20 lines: tune for your device)
+    # --- TAMIL EDITABLE PANEL ON TOP ---
+    editable_tamil = (
+        f"கேள்வி: {row.get('கேள்வி', '')}\n"
+        f"விருப்பங்கள்: {row.get('விருப்பங்கள் ', '')}\n"
+        f"பதில்: {row.get('பதில் ', '')}\n"
+        f"விளக்கம்: {vilakkam_val}"
+    )
+    st.text_area("தமிழ் (Editable)", value=editable_tamil, height=180)
+
+    # --- Spacer to push non-editable reference down ---
     for _ in range(18):
         st.write("")
 
+    # --- NON-EDITABLE REFERENCE BELOW ---
     with st.container():
         st.markdown("#### தமிழ்")
         st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
