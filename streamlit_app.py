@@ -1,15 +1,15 @@
 import streamlit as st
 
-st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
 <style>
 .outer-panel-border {
     position: fixed;
-    top: 3vh;
-    left: 3vw;
-    width: 94vw;
-    height: 94vh;
+    top: 1vh;
+    left: 1vw;
+    width: 98vw;
+    height: 98vh;
     border: 4px solid #2a3a88;
     border-radius: 18px;
     background: #fff;
