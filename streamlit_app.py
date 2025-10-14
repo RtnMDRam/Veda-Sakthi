@@ -11,32 +11,33 @@ st.markdown("""
         line-height: 1.08; 
         margin-bottom: -0.34em !important; 
         margin-top: -0.51em !important;
-        padding-bottom:0 !important; 
-        padding-top:0 !important; 
+        padding-bottom:0 !important;
+        padding-top:0 !important;
     }
     .stTextArea { margin-top: -0.44em !important; margin-bottom: -0.55em !important; }
     textarea[data-baseweb="textarea"] { min-height: 44px !important; font-size: 0.98em !important; }
     .stTextArea label { display:none !important; }
     body, html { margin-bottom: 0 !important; padding-bottom: 0 !important;}
     footer {visibility: hidden;}
-    /* Reference area: fixed height, very tight spacing, scroll if overflows */
-    .cw-min {
-        line-height: 1.05 !important;
+
+    /* Fixed 40vh reference block, always centered if under-filled */
+    .cw-40-fixed {
+        height: 40vh !important;
+        min-height: 40vh !important;
+        max-height: 40vh !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: 1.035em !important;
+        line-height: 1.14 !important;
         margin: 0 !important;
-        padding: 0 !important;
-        font-size: 1.00em !important;
-        max-height: 40vh;
+        padding: 0.5em 0.1em 0.3em 0.1em !important;
         overflow-y: auto;
         overflow-x: hidden;
+        box-sizing: border-box;
+        background: none;
     }
-    .cw-min strong { font-weight: 600 !important; }
-    /* Editable area: fixed height, scroll if overflows */
-    .editable-vh {
-        max-height: 45vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        margin-bottom: 0.2em;
-    }
+    .cw-40-fixed strong { font-weight: 600 !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -48,8 +49,7 @@ if uploaded_file is not None:
     row = df.iloc[0]
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
 
-    # --- Editable block inside a fixed-height scrollable area ---
-    st.markdown('<div class="editable-vh">', unsafe_allow_html=True)
+    # --- Editable block: ultra-compact ---
     st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
     tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=52, key="edit_q", label_visibility='collapsed')
 
@@ -74,22 +74,21 @@ if uploaded_file is not None:
         ans = st.text_area("", value=row.get('பதில் ', ''), key="ans", height=40, label_visibility='collapsed')
     st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
-    st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Non-editable reference block: ultra-compact, fixed to 40vh ---
+    # --- Non-editable block: always fills 40vh, vertically centered ---
     st.markdown(f"""
-    <div class="cw-min">
-      <b>தமிழ்</b><br>
-      <strong>கேள்வி:</strong> {row.get('கேள்வி', '')}<br>
-      <strong>விருப்பங்கள்:</strong> {row.get('விருப்பங்கள் ', '')}<br>
-      <strong>பதில்:</strong> {row.get('பதில் ', '')}<br>
-      <strong>விளக்கம்:</strong> {vilakkam_val}<br>
-      <span style="display:block;height:0.32em"></span>
-      <b>English</b><br>
-      <strong>Question:</strong> {row.get('question ', '')}<br>
-      <strong>Options:</strong> {row.get('questionOptions', '')}<br>
-      <strong>Answer:</strong> {row.get('answers ', '')}<br>
-      <strong>Explanation:</strong> {row.get('explanation', '')}
+    <div class="cw-40-fixed">
+        <div><b>தமிழ்</b></div>
+        <div><strong>கேள்வி:</strong> {row.get('கேள்வி', '')}</div>
+        <div><strong>விருப்பங்கள்:</strong> {row.get('விருப்பங்கள் ', '')}</div>
+        <div><strong>பதில்:</strong> {row.get('பதில் ', '')}</div>
+        <div><strong>விளக்கம்:</strong> {vilakkam_val}</div>
+        <div style="height:0.13em"></div>
+        <div><b>English</b></div>
+        <div><strong>Question:</strong> {row.get('question ', '')}</div>
+        <div><strong>Options:</strong> {row.get('questionOptions', '')}</div>
+        <div><strong>Answer:</strong> {row.get('answers ', '')}</div>
+        <div><strong>Explanation:</strong> {row.get('explanation', '')}</div>
     </div>
     """, unsafe_allow_html=True)
 
