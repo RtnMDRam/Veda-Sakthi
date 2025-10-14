@@ -6,7 +6,7 @@ st.markdown("""
 <style>
 .outer-panel-border {
     position: fixed;
-    top: 3vh;
+    top: 4vh;
     left: 2vw;
     width: 96vw;
     height: 96vh;
