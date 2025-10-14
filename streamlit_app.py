@@ -14,16 +14,16 @@ if uploaded_file is not None:
 
     # Tamil box (above)
     with st.container():
-        st.subheader("Tamil Version (Above)")
-        st.markdown(f"**[translate:கேள்வி]:** [translate:{row.get('கேள்வி', '')}]")
-        st.markdown(f"**[translate:விருப்பங்கள்]:** [translate:{row.get('விருப்பங்கள் ', '')}]")
-        st.markdown(f"**[translate:பதில்]:** [translate:{row.get('பதில் ', '')}]")
-        st.markdown(f"**[translate:விளக்கம்]:** [translate:{row.get('விளக்கம் ', '')}]")
+        st.subheader("Tamil")
+        st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
+        st.markdown(f"**விருப்பங்கள்:** {row.get('விருப்பங்கள் ', '')}")
+        st.markdown(f"**பதில்:** {row.get('பதில் ', '')}")
+        st.markdown(f"**விளக்கம்:** {row.get('விளக்கம் ', '')}")
         st.markdown("---")
 
     # English box (bottom)
     with st.container():
-        st.subheader("English Version (Bottom)")
+        st.subheader("English")
         st.markdown(f"**Question:** {row.get('question ', '')}")
         st.markdown(f"**Options:** {row.get('questionOptions', '')}")
         st.markdown(f"**Answer:** {row.get('answers ', '')}")
