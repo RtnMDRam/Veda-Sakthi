@@ -4,7 +4,7 @@ import pandas as pd
 st.markdown("""
     <style>
     .block-container {
-        padding-top: 0.1rem !important;
+        padding-top: 0.08rem !important;
         padding-bottom: 0.1rem !important;
         margin-top: 0 !important;
         margin-bottom: 0 !important;
@@ -40,6 +40,14 @@ st.markdown("""
         box-sizing: border-box;
         background: none;
     }
+    /* Crumple transition from editable to non-editable area */
+    .zero-gap-down {
+        height:0.06em !important;
+        padding:0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background: none !important;
+    }
     .cw-40-fixed {
         height: 40vh !important;
         min-height: 40vh !important;
@@ -50,7 +58,7 @@ st.markdown("""
         font-size: 1.035em !important;
         line-height: 1.14 !important;
         margin: 0 !important;
-        padding: 0.4em 0.1em 0.3em 0.1em !important;
+        padding: 0.35em 0.09em 0.28em 0.09em !important;
         overflow-y: auto;
         overflow-x: hidden;
         box-sizing: border-box;
@@ -95,6 +103,9 @@ if uploaded_file is not None:
     st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
     st.markdown('</div>', unsafe_allow_html=True)
+
+    # --- Remove all space: bring non-editable area as close as possible ---
+    st.markdown('<div class="zero-gap-down"></div>', unsafe_allow_html=True)
 
     # --- Non-editable block: exactly 40vh, centered if underfilled, scrolls if overflows ---
     st.markdown(f"""
