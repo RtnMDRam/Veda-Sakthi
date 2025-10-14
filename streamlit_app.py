@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
 
-# Minimal space throughout the app, especially bottom and headings
+# Maximize usable space, no bottom gap, small headings
 st.markdown("""
     <style>
     .block-container {
         padding-bottom: 0rem !important;
-        padding-top: 1rem !important;
+        padding-top: 0.7rem !important;
     }
     .block-container h4 {
-        font-size: 1.08em !important;
+        font-size: 1.05em !important;
         font-weight: 600 !important;
-        margin-bottom: 0.09em !important;
-        margin-top: 0.15em !important;
+        margin-bottom: 0.07em !important;
+        margin-top: 0.13em !important;
     }
     .block-container p, .block-container ul, .block-container ol {
-        margin-bottom: 0.08em !important;
-        margin-top: 0.08em !important;
+        margin-bottom: 0.07em !important;
+        margin-top: 0.07em !important;
         font-size: 1.01em !important;
     }
     .main {
@@ -40,13 +40,15 @@ if uploaded_file is not None:
 
     row = df.iloc[0]
 
-    # No extra separator before, between, or after containers
+    # Fetch explanation field in Tamil even if Excel has trailing spaces
+    vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
+
     with st.container():
         st.markdown("#### தமிழ்")
         st.markdown(f"**கேள்வி:** {row.get('கேள்வி', '')}")
         st.markdown(f"**விருப்பங்கள்:** {row.get('விருப்பங்கள் ', '')}")
         st.markdown(f"**பதில்:** {row.get('பதில் ', '')}")
-        st.markdown(f"**விளக்கம்:** {row.get('விளக்கம்', '')}")
+        st.markdown(f"**விளக்கம்:** {vilakkam_val}")
 
     with st.container():
         st.markdown("#### English")
