@@ -46,11 +46,11 @@ st.markdown("""
         max-height: 40vh !important;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         font-size: 1.035em !important;
         line-height: 1.14 !important;
         margin: 0 !important;
-        padding: 0 0.09em 0.28em 0.09em !important;  /* no top padding! */
+        padding: 0 0.09em 0.28em 0.09em !important;
         overflow-y: auto;
         overflow-x: hidden;
         box-sizing: border-box;
@@ -94,15 +94,10 @@ if uploaded_file is not None:
     tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Divider line: HUG the next heading, NO space below!
-    st.markdown(
-        '<hr style="height:1.3px;border:none;background:#666;margin:0 0 0 0;padding:0;">',
-        unsafe_allow_html=True
-    )
-
-    # The "தமிழ்" heading comes next, right after the yellow line
+    # Non-editable block, with divider INSIDE and IMMEDIATELY BEFORE தமிழ்
     st.markdown(f"""
     <div class="cw-40-fixed">
+        <hr style="height:1.8px;border:none;background:#666;margin:0 0 0 0;padding:0;">
         <div style="margin-top:0;margin-bottom:0;"><b>தமிழ்</b></div>
         <div><strong>கேள்வி:</strong> {row.get('கேள்வி', '')}</div>
         <div><strong>விருப்பங்கள்:</strong> {row.get('விருப்பங்கள் ', '')}</div>
