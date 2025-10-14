@@ -1,12 +1,15 @@
 import streamlit as st
 import pandas as pd
 
-# Maximize usable space, no bottom gap, small headings
+# All space at the top, Tamil and English display sit at the bottom, very compact
 st.markdown("""
     <style>
     .block-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end !important;
+        min-height: 90vh !important;
         padding-bottom: 0rem !important;
-        padding-top: 0.7rem !important;
     }
     .block-container h4 {
         font-size: 1.05em !important;
@@ -26,7 +29,6 @@ st.markdown("""
     body, html {
         margin-bottom: 0rem !important;
         padding-bottom: 0rem !important;
-        height: 100vh !important;
     }
     footer {visibility: hidden;}
     </style>
@@ -39,9 +41,9 @@ if uploaded_file is not None:
     st.success("File uploaded successfully!")
 
     row = df.iloc[0]
-
-    # Fetch explanation field in Tamil even if Excel has trailing spaces
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
+
+    st.write("")  # creates empty space above for future editable area!
 
     with st.container():
         st.markdown("#### தமிழ்")
@@ -50,7 +52,6 @@ if uploaded_file is not None:
         st.markdown(f"**பதில்:** {row.get('பதில் ', '')}")
         st.markdown(f"**விளக்கம்:** {vilakkam_val}")
 
-    with st.container():
         st.markdown("#### English")
         st.markdown(f"**Question:** {row.get('question ', '')}")
         st.markdown(f"**Options:** {row.get('questionOptions', '')}")
