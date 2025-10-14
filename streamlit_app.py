@@ -60,7 +60,7 @@ st.markdown("""
         font-size: 1.035em !important;
         line-height: 1.14 !important;
         margin: 0 !important;
-        padding: 0.35em 0.09em 0.28em 0.09em !important;
+        padding: 0 0.09em 0.28em 0.09em !important;
         overflow-y: auto;
         overflow-x: hidden;
         box-sizing: border-box;
@@ -118,7 +118,8 @@ if uploaded_file is not None:
     st.markdown('<div class="crumple-transition"></div>', unsafe_allow_html=True)
 
     # --- Horizontal divider line (visible on any theme, grey, not too thick/thin) ---
-    st.markdown('<hr class="custom-divider">', unsafe_allow_html=True)
+    st.markdown('<hr style="height:2px;border:none;background:#666;margin:0 0 0 0;padding:0;">', unsafe_allow_html=True)
+
 
     # --- Non-editable block: exactly 40vh, centered if underfilled, scrolls if overflows ---
     st.markdown(f"""
