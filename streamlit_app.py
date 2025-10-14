@@ -3,33 +3,43 @@ import pandas as pd
 
 st.markdown("""
     <style>
-    .block-container { padding-bottom: 0 !important; padding-top: 0.2rem !important; }
-    .main { padding-bottom: 0 !important; margin-bottom: 0 !important; }
-    .tight-label { 
-        font-size: 0.85em !important; 
-        font-weight: 500 !important; 
-        line-height: 1.08; 
-        margin-bottom: -0.34em !important; 
-        margin-top: -0.51em !important;
-        padding-bottom:0 !important; 
-        padding-top:0 !important; 
+    .block-container {
+        padding-top: 0.1rem !important;
+        padding-bottom: 0.1rem !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
     }
-    .stTextArea { margin-top: -0.44em !important; margin-bottom: -0.55em !important; }
-    textarea[data-baseweb="textarea"] { min-height: 44px !important; font-size: 0.98em !important; }
+    header, footer { display: none !important; }
+    .main { margin-top: 0 !important; margin-bottom: 0 !important; }
+    .tight-label {
+        font-size: 0.85em !important;
+        font-weight: 500 !important;
+        line-height: 1.08;
+        margin-bottom: -0.34em !important;
+        margin-top: -0.51em !important;
+        padding-bottom:0 !important;
+        padding-top:0 !important;
+    }
+    .stTextArea {
+        margin-top: -0.44em !important;
+        margin-bottom: -0.55em !important;
+    }
+    textarea[data-baseweb="textarea"] {
+        min-height: 44px !important;
+        font-size: 0.98em !important;
+    }
     .stTextArea label { display:none !important; }
-    body, html { margin-bottom: 0 !important; padding-bottom: 0 !important;}
-    footer {visibility: hidden;}
-    /* Editable area: fixed at 45vh, scrolls if overflows */
     .editable-vh45 {
         height: 45vh !important;
         min-height: 45vh !important;
         max-height: 45vh !important;
         overflow-y: auto;
         overflow-x: hidden;
-        margin-bottom: 0.2em;
+        margin-bottom: 0;
+        padding-bottom: 0;
         box-sizing: border-box;
+        background: none;
     }
-    /* Reference area: fixed at 40vh, centered if underfilled, scroll if overflows */
     .cw-40-fixed {
         height: 40vh !important;
         min-height: 40vh !important;
@@ -40,7 +50,7 @@ st.markdown("""
         font-size: 1.035em !important;
         line-height: 1.14 !important;
         margin: 0 !important;
-        padding: 0.5em 0.1em 0.3em 0.1em !important;
+        padding: 0.4em 0.1em 0.3em 0.1em !important;
         overflow-y: auto;
         overflow-x: hidden;
         box-sizing: border-box;
@@ -58,7 +68,7 @@ if uploaded_file is not None:
     row = df.iloc[0]
     vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
 
-    # --- Editable block: exactly 45vh, scrollable ---
+    # --- Editable block: exactly 45vh, scrollable, top ---
     st.markdown('<div class="editable-vh45">', unsafe_allow_html=True)
     st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
     tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=52, key="edit_q", label_visibility='collapsed')
