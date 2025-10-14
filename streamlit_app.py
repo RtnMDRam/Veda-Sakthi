@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
 
-# Minimize space between blocks and shrink headings
+# Minimal vertical space between content blocks, small subheadings, zero bottom margin
 st.markdown("""
     <style>
-    .block-container h2, .block-container h3 {
-        font-size: 1.05rem !important;
-        margin-bottom: 0.20rem !important;
+    .block-container h4 {
+        font-size: 1.1em !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.12rem !important;
         margin-top: 0.25rem !important;
     }
     .block-container p, .block-container ul, .block-container ol {
-        margin-bottom: 0.10rem !important;
-        margin-top: 0.10rem !important;
-        font-size: 1.0rem;
+        margin-bottom: 0.11rem !important;
+        margin-top: 0.11rem !important;
+        font-size: 1.01em !important;
     }
     .block-container { padding-bottom: 0rem !important; }
-    .css-18ni7ap { padding-bottom: 0rem !important; }
-    footer { visibility: hidden; }
+    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
