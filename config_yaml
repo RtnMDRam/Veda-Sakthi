@@ -8,7 +8,138 @@ credentials:
     adminuser:
       email: admin@yourdomain.com
       name: Admin User
-      password: adminpassword  # Plaintext initially; hashed after first run
+      password: adminpassword
       roles:
         - admin
-
+    sme1:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme2:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    sme3:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme4:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    sme5:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme6:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    sme7:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme8:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    sme9:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme10:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    sme11:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme12:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    sme13:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme14:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    sme15:
+      email: sme1@yourdomain.com
+      name: SME 1
+      password: sme1password
+      roles:
+        - SME
+    sme16:
+      email: sme2@yourdomain.com
+      name: SME 2
+      password: sme2password
+      roles:
+        - SME
+    translator1:
+      email: translator1@yourdomain.com
+      name: Translator 1
+      password: translatorpassword
+      roles:
+        - translator
+    translator2:
+      email: translator1@yourdomain.com
+      name: Translator 1
+      password: translatorpassword
+      roles:
+        - translator
+    translator3:
+      email: translator1@yourdomain.com
+      name: Translator 1
+      password: translatorpassword
+      roles:
+        - translator
+    translator4:
+      email: translator1@yourdomain.com
+      name: Translator 1
+      password: translatorpassword
+      roles:
+        - translator
+    translator5:
+      email: translator1@yourdomain.com
+      name: Translator 1
+      password: translatorpassword
+      roles:
+        - translator
+    translator6:
+      email: translator1@yourdomain.com
+      name: Translator 1
+      password: translatorpassword
+      roles:
+        - translator
