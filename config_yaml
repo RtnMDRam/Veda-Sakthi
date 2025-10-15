@@ -1,1 +1,14 @@
+cookie:
+  expiry_days: 30
+  key: your_cookie_key
+  name: your_cookie_name
+
+credentials:
+  usernames:
+    adminuser:
+      email: admin@yourdomain.com
+      name: Admin User
+      password: adminpassword  # Plaintext initially; hashed after first run
+      roles:
+        - admin
 
