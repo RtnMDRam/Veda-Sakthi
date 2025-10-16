@@ -352,49 +352,54 @@ def render_header():
         .sme-banner {
             background: linear-gradient(115deg, #eef2ff 0%, #f5f5ff 100%);
             border-radius: 20px;
-            padding: 0.9rem 1.15rem;
-            margin-bottom: 1.2rem;
-            box-shadow: 0 15px 28px rgba(76, 29, 149, 0.12);
+            padding: 0.6rem 0.9rem;
+            margin-bottom: 0.9rem;
+            box-shadow: 0 10px 22px rgba(76, 29, 149, 0.12);
         }
         .sme-banner-row {
             display: flex;
             align-items: center;
-            gap: 1.4rem;
+            gap: 0.75rem;
         }
         .sme-banner-item {
-            font-size: 1.08rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: #1e1b4b;
+            color: #1f1c4e;
         }
         .sme-banner-item.center {
             flex: 1;
-            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.4rem;
-            color: #111827;
+            gap: 0.35rem;
+            font-weight: 500;
         }
-        .sme-banner-item.center span.name {
+        .sme-banner-item.center .name {
             font-weight: 700;
             color: #0f172a;
+        }
+        .sme-time-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
         }
         .sme-logout .stButton > button {
             border-radius: 999px;
             font-weight: 600;
-            padding: 0.45rem 1.45rem;
+            padding: 0.28rem 0.75rem;
+            font-size: 0.7rem;
             background: #ffffff;
             color: #111827;
-            border: 1px solid #d9dfe6;
-            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+            border: 1px solid #d7dce4;
+            box-shadow: 0 5px 12px rgba(15, 23, 42, 0.12);
         }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("<div class='sme-banner'><div class='sme-banner-row'>", unsafe_allow_html=True)
-    banner_cols = st.columns([1.4, 2.6, 1.1, 0.9], gap="medium")
+    banner_cols = st.columns([1.6, 2.8, 1.4], gap="small")
     with banner_cols[0]:
         st.markdown(f"<div class='sme-banner-item'>{formatted_date}</div>", unsafe_allow_html=True)
     with banner_cols[1]:
@@ -404,10 +409,11 @@ def render_header():
             unsafe_allow_html=True,
         )
     with banner_cols[2]:
+        st.markdown("<div class='sme-time-actions'>", unsafe_allow_html=True)
         st.markdown(f"<div class='sme-banner-item'>{time_str}</div>", unsafe_allow_html=True)
-    with banner_cols[3]:
         st.markdown("<div class='sme-logout'>", unsafe_allow_html=True)
-        logout_clicked = st.button("Save & Logout", key="header_logout", use_container_width=True)
+        logout_clicked = st.button("Save & Logout", key="header_logout", use_container_width=False)
+        st.markdown("</div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
         if logout_clicked:
             st.session_state.clear()
