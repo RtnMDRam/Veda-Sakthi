@@ -22,6 +22,11 @@ st.markdown(
 .e16n7gab0{
     flex-direction: row !important;
 }
+.e196pkbe3{
+height:70px !important;}
+.e196pkbe2{
+
+gap:0 !important;}
 
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
@@ -349,12 +354,10 @@ def render_header():
         """
         <style>
         .sme-header-wrapper {
-            position: relative;
-            background: linear-gradient(115deg, #e0e7ff 0%, #f3f4f6 100%);
-            border-radius: 0;
-            padding: 0.75rem 1.5rem;
-            margin: -1rem -1rem 1rem -1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0 0 1rem 0;
+            background: transparent;
+            box-shadow: none;
         }
         .sme-header-content {
             display: flex;
