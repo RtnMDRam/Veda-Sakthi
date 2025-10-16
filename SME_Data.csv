@@ -1,1 +1,22 @@
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(page_title="SME Panel", layout="wide")
+
+st.title("Subject Matter Expert (SME) Panel")
+
+# Try to read data from SME_Name_Trial.csv
+try:
+    df = pd.read_csv("SME_Name_Trial.csv")
+    if df.empty:
+        st.warning("The SME data file is empty. Please check the file and re-upload.")
+    else:
+        st.success("SME data loaded successfully!")
+        st.dataframe(df)
+except FileNotFoundError:
+    st.error("SME_Name_Trial.csv not found. Please upload the file.")
+except pd.errors.EmptyDataError:
+    st.error("File exists but has no data or is corrupted.")
+except Exception as e:
+    st.error(f"Unexpected error: {str(e)}")
 
