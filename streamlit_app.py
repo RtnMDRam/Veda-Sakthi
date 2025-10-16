@@ -28,6 +28,19 @@ height:70px !important;}
 text-align:end !important;}
 .st-emotion-cache-r3ry0f{
 gap:1rem !important;}
+
+.sme-header-date {
+    font-size: 1rem !important;;
+    }
+    .sme-header-center {
+    
+    font-size: 1rem !important;;
+    }
+.sme-header-time {
+    
+    font-size: 1rem !important;;
+    }
+
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
     body { overflow-x: hidden; }
@@ -547,7 +560,7 @@ row = question_df.iloc[current_index]
 row_id = str(row.get(ROW_ID_COL, "") or "")
 rows_label = f"({current_index + 1} of {total_rows} rows)"
 
-cols = st.columns([1.4, 2.1, 0.9, 0.9, 0.9, 0.9], gap="small")
+cols = st.columns([1.3, 1.8, 0.9, 0.9, 0.9, 0.9], gap="small")
 
 with cols[0]:
     st.markdown(f"<div class='nav-id'>ID {row_id}</div>", unsafe_allow_html=True)
@@ -557,7 +570,7 @@ with cols[1]:
 
 with cols[2]:
     prev_clicked = st.button(
-        "Previous",
+        "Back",
         use_container_width=True,
         disabled=current_index <= 0,
         key="nav_prev",
