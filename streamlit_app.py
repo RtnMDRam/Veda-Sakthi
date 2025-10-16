@@ -429,7 +429,7 @@ def render_header():
 
     st.markdown("<div class='sme-header-wrapper'><div class='sme-header-content'>", unsafe_allow_html=True)
 
-    cols = st.columns([1.8, 3.5, 1.2, 1.5], gap="small")
+    cols = st.columns([1.8, 4.0, 1.2], gap="small")
 
     with cols[0]:
         st.markdown(f"<div class='sme-header-date'>{formatted_date}</div>", unsafe_allow_html=True)
@@ -444,16 +444,7 @@ def render_header():
     with cols[2]:
         st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
 
-    with cols[3]:
-        st.markdown("<div class='sme-header-button-container'>", unsafe_allow_html=True)
-        logout_clicked = st.button("Save & Logout", key="header_logout")
-        st.markdown("</div>", unsafe_allow_html=True)
-
     st.markdown("</div></div>", unsafe_allow_html=True)
-
-    if logout_clicked:
-        st.session_state.clear()
-        safe_rerun()
 
 
 render_header()
