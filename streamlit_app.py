@@ -343,97 +343,77 @@ def format_tamil_date(now: pd.Timestamp) -> str:
 def render_header():
     now = pd.Timestamp.now()
     formatted_date = format_tamil_date(now)
-    time_str = now.strftime("%H:%M")
+    time_str = now.strftime("%I:%M %p").lstrip("0")
     sme_name = st.session_state.get("sme_display_name", "SME")
 
     st.markdown(
         """
         <style>
-        .sme-header-card {
-            background: linear-gradient(135deg, #ede9fe 0%, #eef2ff 100%);
-            border-radius: 18px;
-            padding: 0.7rem 1.1rem;
-            box-shadow: 0 12px 22px rgba(76, 29, 149, 0.12);
+        .sme-banner {
+            background: linear-gradient(115deg, #eef2ff 0%, #f5f5ff 100%);
+            border-radius: 20px;
+            padding: 0.9rem 1.15rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 15px 28px rgba(76, 29, 149, 0.12);
+        }
+        .sme-banner-row {
             display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            height: 100%;
+            align-items: center;
+            gap: 1.4rem;
         }
-        .sme-header-card .label {
-            font-size: 0.78rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: #64748b;
-        }
-        .sme-header-card .value {
-            font-size: 1.05rem;
+        .sme-banner-item {
+            font-size: 1.08rem;
             font-weight: 600;
-            color: #1e293b;
-        }
-        .sme-header-card.center {
-            text-align: center;
-            justify-content: center;
-        }
-        .sme-header-card.center .label {
-            font-size: 0.82rem;
-            letter-spacing: 0.08em;
-            color: #475569;
-        }
-        .sme-header-card.center .value {
-            font-size: 1.22rem;
             color: #1e1b4b;
         }
+        .sme-banner-item.center {
+            flex: 1;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            color: #111827;
+        }
+        .sme-banner-item.center span.name {
+            font-weight: 700;
+            color: #0f172a;
+        }
         .sme-logout .stButton > button {
-            border-radius: 12px;
+            border-radius: 999px;
             font-weight: 600;
-            padding: 0.55rem 0.9rem;
-            width: 100%;
-            background: #1d4ed8;
-            border: none;
-            color: #ffffff;
+            padding: 0.45rem 1.45rem;
+            background: #ffffff;
+            color: #111827;
+            border: 1px solid #d9dfe6;
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
         }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-    header_cols = st.columns([1.3, 2.3, 1.2], gap="medium")
-    with header_cols[0]:
+    st.markdown("<div class='sme-banner'><div class='sme-banner-row'>", unsafe_allow_html=True)
+    banner_cols = st.columns([1.4, 2.6, 1.1, 0.9], gap="medium")
+    with banner_cols[0]:
+        st.markdown(f"<div class='sme-banner-item'>{formatted_date}</div>", unsafe_allow_html=True)
+    with banner_cols[1]:
         st.markdown(
-            f"""
-            <div class="sme-header-card left">
-                <span class="label">Date</span>
-                <span class="value">{formatted_date}</span>
-            </div>
-            """,
+            f"<div class='sme-banner-item center'>Subject Matter Expert (SME) Panel for "
+            f"<span class='name'>{sme_name}</span></div>",
             unsafe_allow_html=True,
         )
-    with header_cols[1]:
-        st.markdown(
-            f"""
-            <div class="sme-header-card center">
-                <span class="label">Subject Matter Expert (SME) Panel for</span>
-                <span class="value">{sme_name}</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with header_cols[2]:
-        st.markdown(
-            f"""
-            <div class="sme-header-card right">
-                <span class="label">Time</span>
-                <span class="value">{time_str}</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    with banner_cols[2]:
+        st.markdown(f"<div class='sme-banner-item'>{time_str}</div>", unsafe_allow_html=True)
+    with banner_cols[3]:
         st.markdown("<div class='sme-logout'>", unsafe_allow_html=True)
         logout_clicked = st.button("Save & Logout", key="header_logout", use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
         if logout_clicked:
             st.session_state.clear()
             safe_rerun()
+
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
 
 render_header()
