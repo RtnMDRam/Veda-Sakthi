@@ -153,23 +153,20 @@ def style_file_uploaders(configs: List[dict]) -> None:
         "<style>",
         "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] small,"
         " section[data-testid='stFileUploader'] span[data-testid='stFileUploaderFileName'],"
-        " section[data-testid='stFileUploader'] span[data-testid='stFileUploaderFileSize']"
-        " {display:none!important;}",
-        "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderInstructions'],"
+        " section[data-testid='stFileUploader'] span[data-testid='stFileUploaderFileSize'],"
+        " section[data-testid='stFileUploader'] div[data-testid='stFileUploaderInstructions'],"
         " section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] div[aria-live='polite']"
         " {display:none!important;}",
-        "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] {"
-        "display:flex!important; align-items:center!important; justify-content:flex-end!important;"
-        " padding:0.6rem 1.2rem!important; min-height:72px!important; border-radius:16px!important;"
-        "}",
-        "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] button {"
-        "margin-left:auto!important;}",
     ]
 
     for idx, cfg in enumerate(configs, start=1):
         placeholder = cfg.get("placeholder", "")
         filename = cfg.get("filename")
         size_bytes = cfg.get("size")
+        selector = cfg.get("selector")
+
+        if not selector:
+            selector = f"section[data-testid='stFileUploader']:nth-of-type({idx})"
 
         if filename:
             size_text = format_size(size_bytes)
@@ -183,12 +180,15 @@ def style_file_uploaders(configs: List[dict]) -> None:
         content_json = json.dumps(text)
         css_parts.extend(
             [
-                f"section[data-testid='stFileUploader']:nth-of-type({idx}) "
-                "div[data-testid='stFileUploaderDropzone'] {position:relative;}",
-                f"section[data-testid='stFileUploader']:nth-of-type({idx}) "
-                f"div[data-testid='stFileUploaderDropzone']::before {{content:{content_json};"
-                " position:absolute; top:50%; left:1.2rem;"
-                " transform:translateY(-50%); font-weight:600; color:#1f2c44;}}",
+                f"{selector} div[data-testid='stFileUploaderDropzone'] {{"
+                "position:relative; display:flex!important; align-items:center!important;"
+                " justify-content:flex-end!important; padding:0.55rem 1.2rem!important;"
+                " min-height:64px!important; border-radius:16px!important;"
+                "}}",
+                f"{selector} div[data-testid='stFileUploaderDropzone'] button {{margin-left:auto!important;}}",
+                f"{selector} div[data-testid='stFileUploaderDropzone']::before {{content:{content_json};"
+                " position:absolute; top:50%; left:1.2rem; transform:translateY(-50%);"
+                " font-weight:600; color:#1f2c44;}}",
             ]
         )
 
@@ -200,14 +200,14 @@ def style_file_uploaders(configs: List[dict]) -> None:
 col_questionnaire, col_glossary = st.columns(2, gap="large")
 with col_questionnaire:
     questionnaire_file = st.file_uploader(
-        "",
+        "questionnaire-dropzone",
         type="xlsx",
         label_visibility="collapsed",
         key="questionnaire_file",
     )
 with col_glossary:
     glossary_file = st.file_uploader(
-        "",
+        "glossary-dropzone",
         type="xlsx",
         label_visibility="collapsed",
         key="glossary_file",
@@ -250,11 +250,13 @@ style_file_uploaders(
             "filename": st.session_state.get("question_source"),
             "size": st.session_state.get("question_source_size"),
             "placeholder": "Upload Questionnaire",
+            "selector": "section[aria-label='questionnaire-dropzone']",
         },
         {
             "filename": st.session_state.get("glossary_source"),
             "size": st.session_state.get("glossary_size"),
             "placeholder": "Upload Glossary",
+            "selector": "section[aria-label='glossary-dropzone']",
         },
     ]
 )
