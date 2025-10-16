@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# Hide sidebar & header for SME
+# Hide sidebar & header
 hide_streamlit_style = """
     <style>
         [data-testid="stSidebar"] {display: none !important;}
@@ -16,9 +16,10 @@ if "logged_in" not in st.session_state:
 if "whoami" not in st.session_state:
     st.session_state.whoami = ""
 
+# Read SME name from SME_Data.csv in the main directory
 @st.cache_data
 def get_sme_name(username):
-    df = pd.read_csv("SME_Name_Trial.csv")
+    df = pd.read_csv("SME_Data.csv")
     row = df[df["username"] == username]
     if not row.empty:
         return row.iloc[0]["name"]
@@ -30,7 +31,7 @@ if not st.session_state.logged_in:
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        # For demo: one password for all, but you can map in CSV
+        # Basic auth: any username in file with password Test123!
         if username and password == "Test123!":
             st.session_state.logged_in = True
             st.session_state.whoami = username
@@ -80,3 +81,5 @@ else:
     with b_col3:
         if st.button("Save File", key="save_file"):
             st.session_state['save_file'] = True
+
+    # ... further SME panel logic ...
