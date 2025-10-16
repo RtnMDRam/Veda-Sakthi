@@ -199,7 +199,7 @@ def style_file_uploaders(configs: List[dict]) -> None:
 # --- INITIAL DATA LOAD ---
 col_questionnaire, col_glossary = st.columns(2, gap="large")
 with col_questionnaire:
-    st.markdown('<div class="tight-label" style="margin-top:0.2em;">Lesson File</div>', unsafe_allow_html=True)
+    st.markdown('<div class="tight-label" style="margin-top:0.2em;">Upload Lesson File</div>', unsafe_allow_html=True)
     questionnaire_file = st.file_uploader(
         "questionnaire-dropzone",
         type="xlsx",
@@ -207,7 +207,7 @@ with col_questionnaire:
         key="questionnaire_file",
     )
 with col_glossary:
-    st.markdown('<div class="tight-label" style="margin-top:0.2em;">Glossary</div>', unsafe_allow_html=True)
+    st.markdown('<div class="tight-label" style="margin-top:0.2em;">Upload Glossary File</div>', unsafe_allow_html=True)
     glossary_file = st.file_uploader(
         "glossary-dropzone",
         type="xlsx",
