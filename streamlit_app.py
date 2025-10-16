@@ -71,6 +71,7 @@ st.markdown(
 # --- DATA SOURCES & CONSTANTS ---
 DATA_DIR = Path(__file__).resolve().parent
 DEFAULT_QUESTION_FILE = DATA_DIR / "bl_bio_bot_unit_4_chap_9_the_tissues_qb.xlsx"
+SME_CREDENTIALS_FILE = DATA_DIR / "SME_Data.xlsx"
 TAMIL_QUESTION_COL = "கேள்வி"
 TAMIL_OPTIONS_COL = "விருப்பங்கள் "
 TAMIL_ANSWER_COL = "பதில் "
@@ -195,6 +196,140 @@ def style_file_uploaders(configs: List[dict]) -> None:
     css_parts.append("</style>")
     st.markdown("\n".join(css_parts), unsafe_allow_html=True)
 
+
+def safe_rerun() -> None:
+    """Trigger a Streamlit rerun across supported versions."""
+    rerun_fn = getattr(st, "rerun", None)
+    if callable(rerun_fn):
+        rerun_fn()
+        return
+    exp_rerun = getattr(st, "experimental_rerun", None)
+    if callable(exp_rerun):
+        exp_rerun()
+
+
+@st.cache_data
+def load_sme_credentials(path: Path) -> Optional[pd.DataFrame]:
+    """Load the SME credentials workbook."""
+    if not path.exists():
+        return None
+    try:
+        df = pd.read_excel(path).fillna("")
+    except Exception:  # noqa: BLE001
+        return None
+    required_columns = {"Email", "Password"}
+    if not required_columns.issubset({col.strip() for col in df.columns}):
+        return None
+    return df
+
+
+def require_login() -> None:
+    """Render the login screen until the user authenticates."""
+    if st.session_state.get("authenticated"):
+        return
+
+    credentials_df = load_sme_credentials(SME_CREDENTIALS_FILE)
+    if credentials_df is None or credentials_df.empty:
+        st.error(
+            "SME credentials file is missing or invalid. "
+            "Please ensure 'SME_Data.xlsx' exists with 'Email' and 'Password' columns."
+        )
+        st.stop()
+
+    st.markdown(
+        """
+        <style>
+        .login-wrapper {
+            max-width: 420px;
+            margin: 10vh auto 4vh;
+            padding: 2.5rem 2.4rem 2.2rem;
+            border-radius: 22px;
+            background: #ffffff;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+        }
+        .login-logo {
+            width: 92px;
+            height: 92px;
+            margin: 0 auto 1.6rem;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #3730a3;
+            font-size: 1.05rem;
+        }
+        .login-wrapper h3 {
+            text-align: center;
+            margin-bottom: 0.35rem;
+        }
+        .login-wrapper p {
+            text-align: center;
+            margin-bottom: 1.6rem;
+            color: #64748b;
+            font-size: 0.93rem;
+        }
+        .login-wrapper [data-testid="baseButton-primary"] button,
+        .login-wrapper [data-testid="baseButton-secondary"] button {
+            width: 100%;
+            padding: 0.65rem 0;
+            font-weight: 600;
+            border-radius: 10px;
+            background: #4338ca;
+            border: none;
+        }
+        .login-wrapper .stTextInput input {
+            border-radius: 10px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.container():
+        st.markdown("<div class='login-wrapper'>", unsafe_allow_html=True)
+        st.markdown("<div class='login-logo'>LOGO</div>", unsafe_allow_html=True)
+        st.markdown("<h3>SME Workspace</h3>", unsafe_allow_html=True)
+        st.markdown("<p>Sign in with your SME account to continue.</p>", unsafe_allow_html=True)
+
+        with st.form("sme_login_form", clear_on_submit=False):
+            email = st.text_input("Email", placeholder="name@example.com")
+            password = st.text_input("Password", placeholder="Enter your password", type="password")
+            submitted = st.form_submit_button("Sign In", use_container_width=True)
+
+        if submitted:
+            if not email or not password:
+                st.error("Email and password are required.")
+            else:
+                normalized = email.strip().lower()
+                normalized_emails = credentials_df["Email"].astype(str).str.strip().str.lower()
+                match = credentials_df[normalized_emails == normalized]
+
+                if match.empty:
+                    st.error("Invalid email or password.")
+                else:
+                    record = match.iloc[0]
+                    expected_password = str(record.get("Password", "")).strip()
+                    if password.strip() != expected_password:
+                        st.error("Invalid email or password.")
+                    else:
+                        email_value = record.get("Email", "").strip()
+                        st.session_state["authenticated"] = True
+                        st.session_state["sme_email"] = email_value
+                        st.session_state["sme_display_name"] = (
+                            record.get("SME Name") or record.get("SME Name ", "") or email_value
+                        )
+                        st.session_state["sme_record"] = record.to_dict()
+                        safe_rerun()
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.stop()
+
+
+require_login()
 
 # --- INITIAL DATA LOAD ---
 col_questionnaire, col_glossary = st.columns(2, gap="large")
