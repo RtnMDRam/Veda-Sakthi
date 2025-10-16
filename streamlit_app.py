@@ -547,7 +547,7 @@ row = question_df.iloc[current_index]
 row_id = str(row.get(ROW_ID_COL, "") or "")
 rows_label = f"({current_index + 1} of {total_rows} rows)"
 
-cols = st.columns([1.4, 2.1, 1, 1, 1.2], gap="small")
+cols = st.columns([1.4, 2.1, 0.9, 0.9, 0.9, 0.9], gap="small")
 
 with cols[0]:
     st.markdown(f"<div class='nav-id'>ID {row_id}</div>", unsafe_allow_html=True)
@@ -573,7 +573,12 @@ with cols[3]:
 
 with cols[4]:
     st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
-    save_logout_clicked = st.button("Save & Logout", key="nav_save_logout")
+    save_clicked = st.button("Save", key="nav_save")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with cols[5]:
+    st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
+    logout_clicked = st.button("Logout", key="nav_logout")
     st.markdown("</div>", unsafe_allow_html=True)
 
 if prev_clicked:
@@ -584,7 +589,10 @@ if next_clicked:
     st.session_state["question_index"] = min(total_rows - 1, current_index + 1)
     safe_rerun()
 
-if save_logout_clicked:
+if save_clicked:
+    st.session_state["nav_last_save"] = pd.Timestamp.now().isoformat()
+
+if logout_clicked:
     st.session_state.clear()
     safe_rerun()
 
