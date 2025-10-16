@@ -16,7 +16,7 @@ authenticator = stauth.Authenticate(
 )
 
 # Only these two values are valid: 'main' or 'sidebar'
-name, authentication_status, username = authenticator.login('Login', 'unrendered')
+name, authentication_status, username = authenticator.login('Login', 'main')
 
 if authentication_status:
     st.success(f'Welcome {name}')  # Optionally, replace with your branding
