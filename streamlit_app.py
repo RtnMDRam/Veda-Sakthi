@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-# Hide sidebar & header
 hide_streamlit_style = """
     <style>
         [data-testid="stSidebar"] {display: none !important;}
@@ -16,13 +15,13 @@ if "logged_in" not in st.session_state:
 if "whoami" not in st.session_state:
     st.session_state.whoami = ""
 
-# Read SME name from SME_Data.csv in the main directory
+# Read SME display name from "SME Name" column in SME_Data.csv
 @st.cache_data
 def get_sme_name(username):
     df = pd.read_csv("SME_Data.csv")
     row = df[df["username"] == username]
     if not row.empty:
-        return row.iloc[0]["name"]
+        return row.iloc[0]["SME Name"]   # <-- Changed here!
     return username
 
 if not st.session_state.logged_in:
@@ -31,7 +30,6 @@ if not st.session_state.logged_in:
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        # Basic auth: any username in file with password Test123!
         if username and password == "Test123!":
             st.session_state.logged_in = True
             st.session_state.whoami = username
