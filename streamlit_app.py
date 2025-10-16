@@ -19,6 +19,10 @@ st.markdown(
 
     justify-content: center !important;
 }
+.e16n7gab0{
+    flex-direction: row !important;
+}
+
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
     body { overflow-x: hidden; }
@@ -331,45 +335,56 @@ def format_tamil_date(now: pd.Timestamp) -> str:
     """Generate formatted Tamil/Gregorian date display placeholder."""
     # Placeholder Tamil date; adjust logic if proper calendar conversion is needed.
     tamil_date = "புரட்டாசி 30"
-    gregorian = now.strftime("%Y %b %d")
-    return f"{tamil_date} / {gregorian}"
+    year = now.strftime("%Y")
+    month_day = now.strftime("%b %d")
+    return (
+        f"<span class='sme-date-main'>{tamil_date} / {year}</span>"
+        f"<span class='sme-date-sub'>{month_day}</span>"
+    )
 
 
 def render_header():
     now = pd.Timestamp.now()
     formatted_date = format_tamil_date(now)
-    time_str = now.strftime("%I : %M : %S %p").lstrip("0")
+    time_str = now.strftime("%I:%M:%S %p").lstrip("0")
     sme_name = st.session_state.get("sme_display_name", "SME")
 
     st.markdown(
         """
         <style>
         .sme-header-wrapper {
-            position: relative;
             background: linear-gradient(115deg, #e0e7ff 0%, #f3f4f6 100%);
-            border-radius: 0;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.2rem;
             margin: -1rem -1rem 1rem -1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 2px 8px rgba(15,23,42,0.08);
         }
         .sme-header-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: nowrap;
+            gap: 0.9rem;
         }
         .sme-header-date {
-            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.78rem;
             font-weight: 600;
             color: #1f2937;
-            white-space: nowrap;
             flex-shrink: 0;
+            line-height: 1.2;
+        }
+        .sme-header-date .sme-date-main {
+            font-weight: 600;
+        }
+        .sme-header-date .sme-date-sub {
+            font-size: 0.74rem;
+            font-weight: 500;
+            color: #0f172a;
         }
         .sme-header-center {
             flex: 1;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 500;
             color: #374151;
             white-space: nowrap;
@@ -384,30 +399,24 @@ def render_header():
         .sme-header-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.6rem;
             flex-shrink: 0;
         }
         .sme-header-time {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: #1f2937;
             white-space: nowrap;
         }
-        .sme-header-button-container {
-            display: inline-block;
-        }
-        .sme-header-button-container .stButton {
-            display: inline-block;
-        }
         .sme-header-button-container .stButton > button {
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
-            padding: 0.4rem 1rem !important;
-            font-size: 0.8rem !important;
+            padding: 0.32rem 0.9rem !important;
+            font-size: 0.74rem !important;
             background: #ffffff !important;
             color: #111827 !important;
-            border: 1px solid #d1d5db !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #d0d7e2 !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
             white-space: nowrap;
             min-height: unset !important;
             height: auto !important;
@@ -421,30 +430,31 @@ def render_header():
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div class='sme-header-wrapper'><div class='sme-header-content'>", unsafe_allow_html=True)
+    header_container = st.container()
+    with header_container:
+        st.markdown("<div class='sme-header-wrapper'><div class='sme-header-content'>", unsafe_allow_html=True)
 
-    # Use single row with proper flex layout - adjusted ratios for better fit
-    cols = st.columns([1.8, 3.5, 1.2, 1.5], gap="small")
+        col_date, col_center, col_right = st.columns([1.7, 3.2, 1.7], gap="small")
 
-    with cols[0]:
-        st.markdown(f"<div class='sme-header-date'>{formatted_date}</div>", unsafe_allow_html=True)
+        with col_date:
+            st.markdown(f"<div class='sme-header-date'>{formatted_date}</div>", unsafe_allow_html=True)
 
-    with cols[1]:
-        st.markdown(
-            f"<div class='sme-header-center'>Subject Matter Expert (SME) Panel for "
-            f"<span class='sme-name'>{sme_name}</span></div>",
-            unsafe_allow_html=True,
-        )
+        with col_center:
+            st.markdown(
+                f"<div class='sme-header-center'>Subject Matter Expert (SME) Panel for "
+                f"<span class='sme-name'>{sme_name}</span></div>",
+                unsafe_allow_html=True,
+            )
 
-    with cols[2]:
-        st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
+        with col_right:
+            st.markdown("<div class='sme-header-right'>", unsafe_allow_html=True)
+            st.markdown(f"<span class='sme-header-time'>{time_str}</span>", unsafe_allow_html=True)
+            st.markdown("<div class='sme-header-button-container'>", unsafe_allow_html=True)
+            logout_clicked = st.button("Save & Logout", key="header_logout", use_container_width=False)
+            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-    with cols[3]:
-        st.markdown("<div class='sme-header-button-container'>", unsafe_allow_html=True)
-        logout_clicked = st.button("Save & Logout", key="header_logout")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("</div></div>", unsafe_allow_html=True)
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
     if logout_clicked:
         st.session_state.clear()
