@@ -1,61 +1,56 @@
 import streamlit as st
-import datetime
+import pandas as pd
 
-# Hides the Streamlit sidebar COMPLETELY
+# Hide sidebar & header for SME
 hide_streamlit_style = """
     <style>
         [data-testid="stSidebar"] {display: none !important;}
         [data-testid="stHeader"] {z-index: 1;}
-        .main .block-container {
-            padding-top: 2rem;
-        }
+        .main .block-container {padding-top: 2rem;}
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-USERNAME = "admin1"
-PASSWORD = "Test123!"
-
+# Authentication stub
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+if "whoami" not in st.session_state:
+    st.session_state.whoami = ""
+
+# Load SME names from CSV for showing after login
+@st.cache_data
+def get_sme_name(username):
+    df = pd.read_csv("SME_Name_Trial.csv")
+    row = df[df["username"] == username]
+    if not row.empty:
+        return row.iloc[0]["name"]
+    return username
 
 if not st.session_state.logged_in:
     st.title("Login")
-
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        if username == USERNAME and password == PASSWORD:
+        # Optionally, you could check CSV or keep this as needed for your SME passwords
+        if username and password == "Test123!":  # Change logic for real deployments
             st.session_state.logged_in = True
-            st.success("Login successful!")
+            st.session_state.whoami = username
             st.rerun()
         else:
             st.error("Incorrect username or password.")
     st.stop()
 else:
-    st.success(f'Welcome {USERNAME}')  # Show main SME panel
+    # Pull name from CSV file dynamically, display it in the panel heading
+    sme_display_name = get_sme_name(st.session_state.whoami)
+    st.markdown(
+        f"<h3 style='text-align: center;'>Subject Matter Expert (SME) Panel for <u>{sme_display_name}</u></h3>",
+        unsafe_allow_html=True,
+    )
 
-    def get_tamil_date():
-        now = datetime.datetime.now()
-        gregorian = now.strftime("%Y %b %d")
-        tamil = "புரட்டாசி 29"  # Placeholder, set your logic
-        return f"{tamil} / {gregorian}"
-
-    def get_time():
-        return datetime.datetime.now().strftime("%H:%M")
-
-    col1, col2, col3 = st.columns([1.3, 2.7, 1])
-    with col1:
-        st.write("**Date**")
-        st.write(get_tamil_date())
-    with col2:
-        st.write("**Subject Matter Expert (SME) Panel for <Tr/Ta Name>**")
-    with col3:
-        st.write("**Time**")
-        st.write(get_time())
     st.markdown("---", unsafe_allow_html=True)
 
+    # File and Glossary Links
     col_link1, col_link_mid, col_link2 = st.columns([2.2, 1, 2.2])
     with col_link1:
         file_link = st.text_input("Paste the CSV/XLSX Link Given by Admin", "")
@@ -66,6 +61,7 @@ else:
         load_gloss = st.button("Load", key="load_glossary")
     st.markdown("---", unsafe_allow_html=True)
 
+    # Action Buttons & Row Info
     bt_col1, bt_col2, bt_col3, bt_col4, bt_col5, bt_col6 = st.columns([1.3, 1.6, 1.1, 1.1, 1.6, 1.3])
     with bt_col1:
         if st.button("Hi! Glossary"):
@@ -82,6 +78,7 @@ else:
         if st.button("Save & Next"):
             st.session_state['save_and_next'] = True
 
+    # Bottom Save Final Button
     b_col1, b_col2, b_col3 = st.columns([1.15, 2.6, 1.15])
     with b_col1:
         pass
@@ -91,4 +88,4 @@ else:
         if st.button("Save File", key="save_file"):
             st.session_state['save_file'] = True
 
-    # ...rest of your SME content...
+    # ...rest of your SME UI goes here...
