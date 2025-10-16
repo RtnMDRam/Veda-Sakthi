@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import List, Optional
 
@@ -121,17 +122,72 @@ def parse_tamil_options(raw_value) -> List[str]:
     return cleaned[:4]
 
 
-def set_dataset(df: pd.DataFrame, source_name: str) -> None:
+def set_dataset(
+    df: pd.DataFrame,
+    source_name: str,
+    *,
+    source_size: Optional[int] = None,
+    source_type: str = "upload",
+) -> None:
     """Store the active dataframe in session state."""
     st.session_state["question_df"] = df
     st.session_state["question_total"] = len(df)
     st.session_state["question_source"] = source_name
+    st.session_state["question_source_size"] = source_size
     st.session_state["question_index"] = 0
-    st.session_state["question_source_type"] = "upload"
+    st.session_state["question_source_type"] = source_type
+
+
+def format_size(size_bytes: Optional[int]) -> str:
+    """Return a human-friendly size string."""
+    if not size_bytes:
+        return ""
+    if size_bytes >= 1024 * 1024:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+    return f"{size_bytes / 1024:.1f} KB"
+
+
+def render_dropzone_caption(filename: Optional[str], size_bytes: Optional[int]) -> None:
+    """Inject CSS to show the active filename inside the uploader dropzone."""
+    if not filename:
+        return
+
+    size_text = format_size(size_bytes)
+    display_text = f"{filename} {size_text}".strip()
+    content_json = json.dumps(display_text)
+
+    st.markdown(
+        f"""
+        <style>
+        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderInstructions"] {{
+            display: none !important;
+        }}
+        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] small {{
+            display: none !important;
+        }}
+        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] div[aria-live="polite"] {{
+            display: none !important;
+        }}
+        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] {{
+            position: relative;
+        }}
+        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"]::after {{
+            content: {content_json};
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 600;
+            color: #1f2c44;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 # --- INITIAL DATA LOAD ---
-uploaded_file = st.file_uploader("Upload a bilingual Excel file (.xlsx)", type="xlsx")
+uploaded_file = st.file_uploader('', type='xlsx', label_visibility='collapsed')
 
 if uploaded_file is not None:
     source_changed = st.session_state.get("question_source") != uploaded_file.name or st.session_state.get(
@@ -140,16 +196,23 @@ if uploaded_file is not None:
     if source_changed:
         uploaded_df = load_dataframe(uploaded_file)
         if uploaded_df is not None:
-            set_dataset(uploaded_df, uploaded_file.name)
-            st.success(f"Loaded question bank '{uploaded_file.name}'")
+            set_dataset(
+                uploaded_df,
+                uploaded_file.name,
+                source_size=getattr(uploaded_file, "size", None),
+                source_type="upload",
+            )
 else:
     if st.session_state.get("question_source_type") != "default":
         if DEFAULT_QUESTION_FILE.exists():
             default_df = load_dataframe(DEFAULT_QUESTION_FILE)
             if default_df is not None:
-                set_dataset(default_df, DEFAULT_QUESTION_FILE.name)
-                st.session_state["question_source_type"] = "default"
-                st.success(f"Loaded default question bank '{DEFAULT_QUESTION_FILE.name}'")
+                set_dataset(
+                    default_df,
+                    DEFAULT_QUESTION_FILE.name,
+                    source_size=DEFAULT_QUESTION_FILE.stat().st_size,
+                    source_type="default",
+                )
         else:
             st.info("Default question bank was not found. Please upload an Excel file to continue.")
 
@@ -157,6 +220,11 @@ question_df: Optional[pd.DataFrame] = st.session_state.get("question_df")
 
 if question_df is None:
     st.stop()
+
+render_dropzone_caption(
+    st.session_state.get("question_source"),
+    st.session_state.get("question_source_size"),
+)
 
 total_rows = st.session_state.get("question_total", len(question_df))
 current_index = min(st.session_state.get("question_index", 0), total_rows - 1)
@@ -191,7 +259,7 @@ with col_info:
         unsafe_allow_html=True,
     )
 
-st.caption(f"Active question bank: {st.session_state.get('question_source', 'Unknown source')}")
+
 
 # --- DATA EXTRACTION FOR CURRENT ROW ---
 tamil_question = str(row.get(TAMIL_QUESTION_COL, ""))
