@@ -67,6 +67,22 @@ gap:1rem !important;}
         background: none;
     }
     .cw-40-fixed strong { font-weight: 600 !important; }
+.nav-id {
+        font-weight: 600;
+        color: #1f2937;
+        white-space: nowrap;
+    }
+    .nav-rows {
+        font-weight: 600;
+        color: #111827;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .nav-save-btn .stButton > button {
+        padding: 0.35rem 0.75rem !important;
+        font-size: 0.78rem !important;
+        border-radius: 8px !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -527,33 +543,54 @@ current_index = min(st.session_state.get("question_index", 0), total_rows - 1)
 st.session_state["question_index"] = current_index  # Clamp in case data size changed.
 
 # --- NAVIGATION CONTROLS ---
-col_prev, col_info, col_next = st.columns([1, 2.4, 1])
-with col_prev:
-    prev_clicked = st.button("Previous", use_container_width=True, disabled=current_index <= 0)
-with col_next:
+row = question_df.iloc[current_index]
+row_id = str(row.get(ROW_ID_COL, "") or "")
+rows_label = f"({current_index + 1} of {total_rows} rows)"
+
+cols = st.columns([1.4, 2.1, 1, 1, 1.2], gap="small")
+
+with cols[0]:
+    st.markdown(f"<div class='nav-id'>ID {row_id}</div>", unsafe_allow_html=True)
+
+with cols[1]:
+    st.markdown(f"<div class='nav-rows'>{rows_label}</div>", unsafe_allow_html=True)
+
+with cols[2]:
+    prev_clicked = st.button(
+        "Previous",
+        use_container_width=True,
+        disabled=current_index <= 0,
+        key="nav_prev",
+    )
+
+with cols[3]:
     next_clicked = st.button(
         "Next",
         use_container_width=True,
         disabled=current_index >= total_rows - 1,
+        key="nav_next",
     )
+
+with cols[4]:
+    st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
+    save_logout_clicked = st.button("Save & Logout", key="nav_save_logout")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 if prev_clicked:
     st.session_state["question_index"] = max(0, current_index - 1)
+    safe_rerun()
 
 if next_clicked:
     st.session_state["question_index"] = min(total_rows - 1, current_index + 1)
+    safe_rerun()
+
+if save_logout_clicked:
+    st.session_state.clear()
+    safe_rerun()
 
 current_index = st.session_state["question_index"]
 row = question_df.iloc[current_index]
 row_id = str(row.get(ROW_ID_COL, "") or "")
-
-with col_info:
-    st.markdown(
-        f"<div style='text-align:center;font-weight:600;'>"
-        f"({current_index + 1} of {total_rows} rows) - ID {row_id}"
-        f"</div>",
-        unsafe_allow_html=True,
-    )
 
 
 
