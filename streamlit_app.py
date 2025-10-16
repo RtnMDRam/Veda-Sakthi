@@ -15,6 +15,10 @@ st.markdown(
         margin-top: 0 !important;
         margin-bottom: 0 !important;
     }
+    .st-emotion-cache-wfksaw {
+
+    justify-content: center !important;
+}
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
     body { overflow-x: hidden; }
@@ -37,17 +41,6 @@ st.markdown(
         font-size: 0.98em !important;
     }
     .stTextArea label { display: none !important; }
-    .editable-vh45 {
-        height: 45vh !important;
-        min-height: 45vh !important;
-        max-height: 45vh !important;
-        overflow-y: auto;
-        overflow-x: hidden;
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-        box-sizing: border-box;
-        background: none;
-    }
     .cw-40-fixed {
         height: 40vh !important;
         min-height: 40vh !important;
@@ -578,7 +571,6 @@ english_answer = str(row.get(ENGLISH_ANSWER_COL, ""))
 english_explanation = str(row.get(ENGLISH_EXPLANATION_COL, ""))
 
 # --- EDITABLE BLOCK (TAMIL) ---
-st.markdown('<div class="editable-vh45">', unsafe_allow_html=True)
 st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
 st.text_area(
     "",
@@ -615,7 +607,6 @@ st.text_area(
     height=175,
     label_visibility="collapsed",
 )
-st.markdown("</div>", unsafe_allow_html=True)
 
 # --- DIVIDER ---
 st.markdown(
