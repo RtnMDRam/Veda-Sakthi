@@ -349,20 +349,22 @@ def render_header():
     st.markdown(
         """
         <style>
-        .sme-header-container {
+        .sme-header-wrapper {
+            position: relative;
             background: linear-gradient(115deg, #e0e7ff 0%, #f3f4f6 100%);
             border-radius: 0;
             padding: 0.75rem 1.5rem;
             margin: -1rem -1rem 1rem -1rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
-        .sme-header-row {
+        .sme-header-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1.5rem;
+            gap: 1rem;
+            flex-wrap: nowrap;
         }
-        .sme-header-left {
+        .sme-header-date {
             font-size: 0.8rem;
             font-weight: 600;
             color: #1f2937;
@@ -378,6 +380,7 @@ def render_header():
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            min-width: 0;
         }
         .sme-header-center .sme-name {
             font-weight: 700;
@@ -386,7 +389,7 @@ def render_header():
         .sme-header-right {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
             flex-shrink: 0;
         }
         .sme-header-time {
@@ -395,48 +398,59 @@ def render_header():
             color: #1f2937;
             white-space: nowrap;
         }
-        .sme-header-logout .stButton > button {
+        .sme-header-button-container {
+            display: inline-block;
+        }
+        .sme-header-button-container .stButton {
+            display: inline-block;
+        }
+        .sme-header-button-container .stButton > button {
             border-radius: 8px;
             font-weight: 600;
-            padding: 0.4rem 1rem;
-            font-size: 0.8rem;
-            background: #ffffff;
-            color: #111827;
-            border: 1px solid #d1d5db;
+            padding: 0.4rem 1rem !important;
+            font-size: 0.8rem !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            border: 1px solid #d1d5db !important;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             white-space: nowrap;
-            min-width: fit-content;
+            min-height: unset !important;
+            height: auto !important;
         }
-        .sme-header-logout .stButton > button:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
+        .sme-header-button-container .stButton > button:hover {
+            background: #f9fafb !important;
+            border-color: #9ca3af !important;
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div class='sme-header-container'><div class='sme-header-row'>", unsafe_allow_html=True)
+    st.markdown("<div class='sme-header-wrapper'><div class='sme-header-content'>", unsafe_allow_html=True)
 
-    # Create single row layout
-    col1, col2, col3 = st.columns([2, 4, 2.5], gap="medium")
+    # Use single row with proper flex layout
+    cols = st.columns([1.5, 3, 2], gap="small")
 
-    with col1:
-        st.markdown(f"<div class='sme-header-left'>{formatted_date}</div>", unsafe_allow_html=True)
+    with cols[0]:
+        st.markdown(f"<div class='sme-header-date'>{formatted_date}</div>", unsafe_allow_html=True)
 
-    with col2:
+    with cols[1]:
         st.markdown(
             f"<div class='sme-header-center'>Subject Matter Expert (SME) Panel for "
             f"<span class='sme-name'>{sme_name}</span></div>",
             unsafe_allow_html=True,
         )
 
-    with col3:
+    with cols[2]:
         st.markdown("<div class='sme-header-right'>", unsafe_allow_html=True)
-        st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
-        st.markdown("<div class='sme-header-logout'>", unsafe_allow_html=True)
-        logout_clicked = st.button("Save & Logout", key="header_logout", use_container_width=False)
-        st.markdown("</div></div>", unsafe_allow_html=True)
+        subcols = st.columns([1, 1], gap="small")
+        with subcols[0]:
+            st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
+        with subcols[1]:
+            st.markdown("<div class='sme-header-button-container'>", unsafe_allow_html=True)
+            logout_clicked = st.button("Save & Logout", key="header_logout")
+            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
