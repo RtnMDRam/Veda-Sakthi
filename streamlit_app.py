@@ -147,69 +147,77 @@ def format_size(size_bytes: Optional[int]) -> str:
     return f"{size_bytes / 1024:.1f} KB"
 
 
-def style_file_uploader(filename: Optional[str], size_bytes: Optional[int]) -> None:
-    """Adjust the file uploader appearance."""
-    st.markdown(
-        """
-        <style>
-        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] small,
-        section[data-testid="stFileUploader"] span[data-testid="stFileUploaderFileName"],
-        section[data-testid="stFileUploader"] span[data-testid="stFileUploaderFileSize"] {
-            display: none !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+def style_file_uploaders(configs: List[dict]) -> None:
+    """Adjust the file uploader appearance for each configured dropzone."""
+    css_parts = [
+        "<style>",
+        "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] small,"
+        " section[data-testid='stFileUploader'] span[data-testid='stFileUploaderFileName'],"
+        " section[data-testid='stFileUploader'] span[data-testid='stFileUploaderFileSize']"
+        " {display:none!important;}",
+        "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderInstructions'],"
+        " section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] div[aria-live='polite']"
+        " {display:none!important;}",
+    ]
 
-    if not filename:
-        return
+    for idx, cfg in enumerate(configs, start=1):
+        placeholder = cfg.get("placeholder", "")
+        filename = cfg.get("filename")
+        size_bytes = cfg.get("size")
 
-    size_text = format_size(size_bytes)
-    display_text = f"{filename} {size_text}".strip()
-    content_json = json.dumps(display_text)
+        if filename:
+            size_text = format_size(size_bytes)
+            text = f"{filename} {size_text}".strip()
+        else:
+            text = placeholder
 
-    st.markdown(
-        f"""
-        <style>
-        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderInstructions"] {{
-            display: none !important;
-        }}
-        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] div[aria-live="polite"] {{
-            display: none !important;
-        }}
-        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] {{
-            position: relative;
-        }}
-        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"]::after {{
-            content: {content_json};
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-weight: 600;
-            color: #1f2c44;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+        if not text:
+            continue
+
+        content_json = json.dumps(text)
+        css_parts.extend(
+            [
+                f"section[data-testid='stFileUploader']:nth-of-type({idx}) "
+                "div[data-testid='stFileUploaderDropzone'] {position:relative;}",
+                f"section[data-testid='stFileUploader']:nth-of-type({idx}) "
+                f"div[data-testid='stFileUploaderDropzone']::after {{content:{content_json};"
+                " position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);"
+                " font-weight:600; color:#1f2c44;}}",
+            ]
+        )
+
+    css_parts.append("</style>")
+    st.markdown("\n".join(css_parts), unsafe_allow_html=True)
 
 
 # --- INITIAL DATA LOAD ---
-uploaded_file = st.file_uploader('', type='xlsx', label_visibility='collapsed')
+col_questionnaire, col_glossary = st.columns(2, gap="large")
+with col_questionnaire:
+    questionnaire_file = st.file_uploader(
+        "",
+        type="xlsx",
+        label_visibility="collapsed",
+        key="questionnaire_file",
+    )
+with col_glossary:
+    glossary_file = st.file_uploader(
+        "",
+        type="xlsx",
+        label_visibility="collapsed",
+        key="glossary_file",
+    )
 
-if uploaded_file is not None:
-    source_changed = st.session_state.get("question_source") != uploaded_file.name or st.session_state.get(
+if questionnaire_file is not None:
+    source_changed = st.session_state.get("question_source") != questionnaire_file.name or st.session_state.get(
         "question_source_type"
     ) != "upload"
     if source_changed:
-        uploaded_df = load_dataframe(uploaded_file)
+        uploaded_df = load_dataframe(questionnaire_file)
         if uploaded_df is not None:
             set_dataset(
                 uploaded_df,
-                uploaded_file.name,
-                source_size=getattr(uploaded_file, "size", None),
+                questionnaire_file.name,
+                source_size=getattr(questionnaire_file, "size", None),
                 source_type="upload",
             )
 else:
@@ -226,15 +234,29 @@ else:
         else:
             st.info("Default question bank was not found. Please upload an Excel file to continue.")
 
+if glossary_file is not None:
+    st.session_state["glossary_source"] = glossary_file.name
+    st.session_state["glossary_size"] = getattr(glossary_file, "size", None)
+
+style_file_uploaders(
+    [
+        {
+            "filename": st.session_state.get("question_source"),
+            "size": st.session_state.get("question_source_size"),
+            "placeholder": "Upload the questionnaire",
+        },
+        {
+            "filename": st.session_state.get("glossary_source"),
+            "size": st.session_state.get("glossary_size"),
+            "placeholder": "Upload glossary file",
+        },
+    ]
+)
+
 question_df: Optional[pd.DataFrame] = st.session_state.get("question_df")
 
 if question_df is None:
     st.stop()
-
-style_file_uploader(
-    st.session_state.get("question_source"),
-    st.session_state.get("question_source_size"),
-)
 
 total_rows = st.session_state.get("question_total", len(question_df))
 current_index = min(st.session_state.get("question_index", 0), total_rows - 1)
