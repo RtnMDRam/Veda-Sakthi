@@ -26,7 +26,7 @@ if not st.session_state.logged_in:
         if username == USERNAME and password == PASSWORD:
             st.session_state.logged_in = True
             st.success("Login successful!")
-            st.experimental_rerun()
+            st.rerun()   # UPDATED to latest Streamlit standard
         else:
             st.error("Incorrect username or password.")
     st.stop()
