@@ -139,21 +139,29 @@ def set_dataset(df: pd.DataFrame, source_name: str) -> None:
     st.session_state["question_total"] = len(df)
     st.session_state["question_source"] = source_name
     st.session_state["question_index"] = 0
+    st.session_state["question_source_type"] = "upload"
 
 
 # --- INITIAL DATA LOAD ---
 uploaded_file = st.file_uploader("Upload a bilingual Excel file (.xlsx)", type="xlsx")
 
 if uploaded_file is not None:
-    uploaded_df = load_dataframe(uploaded_file)
-    if uploaded_df is not None:
-        set_dataset(uploaded_df, uploaded_file.name)
+    source_changed = st.session_state.get("question_source") != uploaded_file.name or st.session_state.get(
+        "question_source_type"
+    ) != "upload"
+    if source_changed:
+        uploaded_df = load_dataframe(uploaded_file)
+        if uploaded_df is not None:
+            set_dataset(uploaded_df, uploaded_file.name)
+            st.success(f"Loaded question bank '{uploaded_file.name}'")
 else:
-    if "question_df" not in st.session_state:
+    if st.session_state.get("question_source_type") != "default":
         if DEFAULT_QUESTION_FILE.exists():
             default_df = load_dataframe(DEFAULT_QUESTION_FILE)
             if default_df is not None:
                 set_dataset(default_df, DEFAULT_QUESTION_FILE.name)
+                st.session_state["question_source_type"] = "default"
+                st.success(f"Loaded default question bank '{DEFAULT_QUESTION_FILE.name}'")
         else:
             st.info("Default question bank was not found. Please upload an Excel file to continue.")
 
