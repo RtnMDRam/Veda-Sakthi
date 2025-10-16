@@ -331,6 +331,113 @@ def require_login() -> None:
 
 require_login()
 
+# --- HEADER BAR WITH SME INFO ---
+def format_tamil_date(now: pd.Timestamp) -> str:
+    """Generate formatted Tamil/Gregorian date display placeholder."""
+    # Placeholder Tamil date; adjust logic if proper calendar conversion is needed.
+    tamil_date = "புரட்டாசி 30"
+    gregorian = now.strftime("%Y %b %d")
+    return f"{tamil_date} / {gregorian}"
+
+
+def render_header():
+    now = pd.Timestamp.now()
+    formatted_date = format_tamil_date(now)
+    time_str = now.strftime("%H:%M")
+    sme_name = st.session_state.get("sme_display_name", "SME")
+
+    st.markdown(
+        """
+        <style>
+        .sme-header-card {
+            background: linear-gradient(135deg, #ede9fe 0%, #eef2ff 100%);
+            border-radius: 18px;
+            padding: 0.7rem 1.1rem;
+            box-shadow: 0 12px 22px rgba(76, 29, 149, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            height: 100%;
+        }
+        .sme-header-card .label {
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+        .sme-header-card .value {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .sme-header-card.center {
+            text-align: center;
+            justify-content: center;
+        }
+        .sme-header-card.center .label {
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            color: #475569;
+        }
+        .sme-header-card.center .value {
+            font-size: 1.22rem;
+            color: #1e1b4b;
+        }
+        .sme-logout .stButton > button {
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.55rem 0.9rem;
+            width: 100%;
+            background: #1d4ed8;
+            border: none;
+            color: #ffffff;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+    header_cols = st.columns([1.3, 2.3, 1.2], gap="medium")
+    with header_cols[0]:
+        st.markdown(
+            f"""
+            <div class="sme-header-card left">
+                <span class="label">Date</span>
+                <span class="value">{formatted_date}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with header_cols[1]:
+        st.markdown(
+            f"""
+            <div class="sme-header-card center">
+                <span class="label">Subject Matter Expert (SME) Panel for</span>
+                <span class="value">{sme_name}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with header_cols[2]:
+        st.markdown(
+            f"""
+            <div class="sme-header-card right">
+                <span class="label">Time</span>
+                <span class="value">{time_str}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown("<div class='sme-logout'>", unsafe_allow_html=True)
+        logout_clicked = st.button("Save & Logout", key="header_logout", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+        if logout_clicked:
+            st.session_state.clear()
+            safe_rerun()
+
+
+render_header()
+
 # --- INITIAL DATA LOAD ---
 col_questionnaire, col_glossary = st.columns(2, gap="large")
 with col_questionnaire:
