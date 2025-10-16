@@ -158,6 +158,12 @@ def style_file_uploaders(configs: List[dict]) -> None:
         "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderInstructions'],"
         " section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] div[aria-live='polite']"
         " {display:none!important;}",
+        "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] {"
+        "display:flex!important; align-items:center!important; justify-content:flex-end!important;"
+        " padding:0.6rem 1.2rem!important; min-height:72px!important; border-radius:16px!important;"
+        "}",
+        "section[data-testid='stFileUploader'] div[data-testid='stFileUploaderDropzone'] button {"
+        "margin-left:auto!important;}",
     ]
 
     for idx, cfg in enumerate(configs, start=1):
@@ -180,9 +186,9 @@ def style_file_uploaders(configs: List[dict]) -> None:
                 f"section[data-testid='stFileUploader']:nth-of-type({idx}) "
                 "div[data-testid='stFileUploaderDropzone'] {position:relative;}",
                 f"section[data-testid='stFileUploader']:nth-of-type({idx}) "
-                f"div[data-testid='stFileUploaderDropzone']::after {{content:{content_json};"
-                " position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);"
-                " font-weight:600; color:#1f2c44;}}",
+                f"div[data-testid='stFileUploaderDropzone']::before {{content:{content_json};"
+                " position:absolute; top:50%; left:1.2rem;"
+                " transform:translateY(-50%); font-weight:600; color:#1f2c44;}}",
             ]
         )
 
@@ -243,12 +249,12 @@ style_file_uploaders(
         {
             "filename": st.session_state.get("question_source"),
             "size": st.session_state.get("question_source_size"),
-            "placeholder": "Upload the questionnaire",
+            "placeholder": "Upload Questionnaire",
         },
         {
             "filename": st.session_state.get("glossary_source"),
             "size": st.session_state.get("glossary_size"),
-            "placeholder": "Upload glossary file",
+            "placeholder": "Upload Glossary",
         },
     ]
 )
