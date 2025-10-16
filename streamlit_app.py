@@ -22,17 +22,24 @@ DATA_DIR = Path(__file__).resolve().parent
 SME_DATA_PATHS = [DATA_DIR / "SME_Data.csv", DATA_DIR / "SME_Data.xlsx"]
 
 
+# Cache SME lookup to avoid re-reading the spreadsheet on every rerun.
 @st.cache_data
 def get_sme_name(username):
-    df = None
     data_path = next((path for path in SME_DATA_PATHS if path.exists()), None)
     if data_path is None:
         return username
 
-    if data_path.suffix.lower() == ".csv":
-        df = pd.read_csv(data_path)
-    else:
-        df = pd.read_excel(data_path)
+    try:
+        if data_path.suffix.lower() == ".csv":
+            df = pd.read_csv(data_path)
+        else:
+            df = pd.read_excel(data_path)
+    except ValueError as exc:
+        st.warning(f"Unable to read SME data file '{data_path.name}': {exc}")
+        return username
+    except Exception as exc:
+        st.warning(f"Unexpected error while reading '{data_path.name}': {exc}")
+        return username
 
     row = df[df["username"] == username]
     if not row.empty:
