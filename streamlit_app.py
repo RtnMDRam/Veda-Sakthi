@@ -428,8 +428,8 @@ def render_header():
 
     st.markdown("<div class='sme-header-wrapper'><div class='sme-header-content'>", unsafe_allow_html=True)
 
-    # Use single row with proper flex layout
-    cols = st.columns([1.5, 3, 2], gap="small")
+    # Use single row with proper flex layout - adjusted ratios for better fit
+    cols = st.columns([1.8, 3.5, 1.2, 1.5], gap="small")
 
     with cols[0]:
         st.markdown(f"<div class='sme-header-date'>{formatted_date}</div>", unsafe_allow_html=True)
@@ -442,14 +442,11 @@ def render_header():
         )
 
     with cols[2]:
-        st.markdown("<div class='sme-header-right'>", unsafe_allow_html=True)
-        subcols = st.columns([1, 1], gap="small")
-        with subcols[0]:
-            st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
-        with subcols[1]:
-            st.markdown("<div class='sme-header-button-container'>", unsafe_allow_html=True)
-            logout_clicked = st.button("Save & Logout", key="header_logout")
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
+
+    with cols[3]:
+        st.markdown("<div class='sme-header-button-container'>", unsafe_allow_html=True)
+        logout_clicked = st.button("Save & Logout", key="header_logout")
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("</div></div>", unsafe_allow_html=True)
