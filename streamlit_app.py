@@ -1,31 +1,43 @@
 import streamlit as st
-import streamlit_authenticator as stauth
-import yaml
-from yaml.loader import SafeLoader
 import datetime
 
-# --- AUTHENTICATION LOGIC ---
-with open('config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
+# Debug: Print entire session state
+st.write("DEBUG SESSION STATE:", st.session_state)
 
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
-)
+# ---- SIMPLE AUTH STUB ----
+USERNAME = "admin1"
+PASSWORD = "Test123!"
 
-# Only these two values are valid: 'main' or 'sidebar'
-name, authentication_status, username = authenticator.login('Login', 'main')
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
-if authentication_status:
-    st.success(f'Welcome {name}')  # Optionally, replace with your branding
+if not st.session_state.logged_in:
+    st.title("Login")
+
+    # Text inputs for username/password
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    # Debug: Print inputs as typed
+    st.write(f"Username entered: '{username}'")
+    st.write(f"Password entered: '{password}'")
+
+    if st.button("Login"):
+        if username == USERNAME and password == PASSWORD:
+            st.session_state.logged_in = True
+            st.success("Login successful!")
+            st.experimental_rerun()
+        else:
+            st.error("Incorrect username or password.")
+    st.stop()
+else:
+    st.success(f'Welcome {USERNAME}')  # Customizable
 
     # --- UTILITY FUNCTIONS FOR PANEL ELEMENTS ---
     def get_tamil_date():
         now = datetime.datetime.now()
         gregorian = now.strftime("%Y %b %d")
-        tamil = "புரட்டாசி 29"  # Example placeholder, set from your logic
+        tamil = "புரட்டாசி 29"  # Example placeholder, replace with your logic
         return f"{tamil} / {gregorian}"
 
     def get_time():
@@ -40,7 +52,6 @@ if authentication_status:
         st.write(get_tamil_date())
     with col2:
         st.write("**Subject Matter Expert (SME) Panel for <Tr/Ta Name>**")
-        # Ideally, fill user name from session/user/etc.
     with col3:
         st.write("**Time**")
         st.write(get_time())
@@ -64,38 +75,32 @@ if authentication_status:
 
     with bt_col1:
         if st.button("Hi! Glossary"):
-            st.session_state['show_glossary'] = True  # or your logic here
+            st.session_state['show_glossary'] = True
 
     with bt_col2:
         st.button("Save & Cont..", key="save_continue")
 
     with bt_col3:
-        st.write("Row # A")  # Fill with current pointer if available
+        st.write("Row # A")
 
     with bt_col4:
-        st.write("_id Number")  # Fill with actual row ID
+        st.write("_id Number")
 
     with bt_col5:
-        st.write("Row # z")  # Fill with ending row pointer if needed
+        st.write("Row # z")
 
     with bt_col6:
         if st.button("Save & Next"):
-            st.session_state['save_and_next'] = True  # or your logic
+            st.session_state['save_and_next'] = True
 
     # Bottom Save Final Button
     b_col1, b_col2, b_col3 = st.columns([1.15, 2.6, 1.15])
     with b_col1:
-        pass  # Spacer or "Hi! Glossary" again if needed
+        pass
     with b_col2:
-        pass  # Center nothing, or "Completed" for whole file
+        pass
     with b_col3:
         if st.button("Save File", key="save_file"):
             st.session_state['save_file'] = True
 
-    # --- Below: Main editable and reference panels (reuse your optimized arrangement) ---
-    # ... (insert your streamlined SME panel UI and content here) ...
-
-elif authentication_status is False:
-    st.error('Username/password is incorrect')
-elif authentication_status is None:
-    st.warning('Please enter your username and password')
+    # --- Your SME panel UI and content below ---
