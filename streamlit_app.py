@@ -1,5 +1,7 @@
-import streamlit as st
+from pathlib import Path
+
 import pandas as pd
+import streamlit as st
 
 hide_streamlit_style = """
     <style>
@@ -15,10 +17,23 @@ if "logged_in" not in st.session_state:
 if "whoami" not in st.session_state:
     st.session_state.whoami = ""
 
-# Read SME display name from "SME Name" column in SME_Data.csv
+# Read SME display name from "SME Name" column in SME data file (CSV/XLSX)
+DATA_DIR = Path(__file__).resolve().parent
+SME_DATA_PATHS = [DATA_DIR / "SME_Data.csv", DATA_DIR / "SME_Data.xlsx"]
+
+
 @st.cache_data
 def get_sme_name(username):
-    df = pd.read_csv("SME_Data.csv")
+    df = None
+    data_path = next((path for path in SME_DATA_PATHS if path.exists()), None)
+    if data_path is None:
+        return username
+
+    if data_path.suffix.lower() == ".csv":
+        df = pd.read_csv(data_path)
+    else:
+        df = pd.read_excel(data_path)
+
     row = df[df["username"] == username]
     if not row.empty:
         return row.iloc[0]["SME Name"]   # <-- Changed here!
