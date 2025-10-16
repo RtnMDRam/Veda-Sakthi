@@ -15,6 +15,7 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
+# Only these two values are valid: 'main' or 'sidebar'
 name, authentication_status, username = authenticator.login('Login', 'main')
 
 if authentication_status:
@@ -22,7 +23,6 @@ if authentication_status:
 
     # --- UTILITY FUNCTIONS FOR PANEL ELEMENTS ---
     def get_tamil_date():
-        # Replace this with your Tamil/Gregorian conversion as needed
         now = datetime.datetime.now()
         gregorian = now.strftime("%Y %b %d")
         tamil = "புரட்டாசி 29"  # Example placeholder, set from your logic
@@ -34,7 +34,7 @@ if authentication_status:
     # --- PANEL START ---
 
     # Top Toolbar: Date | Panel Name & SME/Teacher | Time
-    col1, col2, col3 = st.columns([1.3, 2.7, 1])  # tune proportions as needed
+    col1, col2, col3 = st.columns([1.3, 2.7, 1])
     with col1:
         st.write("**Date**")
         st.write(get_tamil_date())
