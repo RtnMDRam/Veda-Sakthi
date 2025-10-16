@@ -214,7 +214,7 @@ def load_sme_credentials(path: Path) -> Optional[pd.DataFrame]:
     if not path.exists():
         return None
     try:
-        df = pd.read_excel(path).fillna("")
+        df = pd.read_excel(path, header=1).fillna("")
     except Exception:  # noqa: BLE001
         return None
     required_columns = {"Email", "Password"}
