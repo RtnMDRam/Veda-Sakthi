@@ -79,9 +79,6 @@ ENGLISH_OPTIONS_COL = "questionOptions"
 ENGLISH_ANSWER_COL = "answers "
 ENGLISH_EXPLANATION_COL = "explanation"
 ROW_ID_COL = "_id"
-GLOSSARY_COLUMNS = ["Glossary", "glossary", "Glossary "]
-
-
 def load_dataframe(source) -> Optional[pd.DataFrame]:
     """Read an Excel source into a dataframe, handling errors gracefully."""
     try:
@@ -122,15 +119,6 @@ def parse_tamil_options(raw_value) -> List[str]:
     while len(cleaned) < 4:
         cleaned.append("")
     return cleaned[:4]
-
-
-def pick_first_available(row: pd.Series, keys: List[str]) -> str:
-    """Fetch the first non-empty value for any of the provided column keys."""
-    for key in keys:
-        value = row.get(key, "")
-        if value:
-            return str(value)
-    return ""
 
 
 def set_dataset(df: pd.DataFrame, source_name: str) -> None:
@@ -210,8 +198,6 @@ tamil_question = str(row.get(TAMIL_QUESTION_COL, ""))
 tamil_options = parse_tamil_options(row.get(TAMIL_OPTIONS_COL, ""))
 tamil_answer = str(row.get(TAMIL_ANSWER_COL, ""))
 tamil_explanation = str(row.get(TAMIL_EXPLANATION_COL, row.get("விளக்கம்", "")))
-tamil_glossary = pick_first_available(row, GLOSSARY_COLUMNS)
-
 english_question = str(row.get(ENGLISH_QUESTION_COL, ""))
 english_options = str(row.get(ENGLISH_OPTIONS_COL, ""))
 english_answer = str(row.get(ENGLISH_ANSWER_COL, ""))
@@ -246,26 +232,6 @@ for col, opt_value, key_suffix in zip(
             height=40,
             label_visibility="collapsed",
         )
-
-glossary_col, answer_col = st.columns(2, gap="small")
-with glossary_col:
-    st.markdown('<div class="tight-label">Glossary</div>', unsafe_allow_html=True)
-    st.text_area(
-        "",
-        value=tamil_glossary,
-        key=f"tamil_glossary_{current_index}",
-        height=40,
-        label_visibility="collapsed",
-    )
-with answer_col:
-    st.markdown('<div class="tight-label">Answer</div>', unsafe_allow_html=True)
-    st.text_area(
-        "",
-        value=tamil_answer,
-        key=f"tamil_answer_{current_index}",
-        height=40,
-        label_visibility="collapsed",
-    )
 
 st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
 st.text_area(
