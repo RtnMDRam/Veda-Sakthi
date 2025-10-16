@@ -1,6 +1,6 @@
 cookie:
   expiry_days: 30
-  key: super_secret_cookie_key   # Change this to a long random string for production
+  key: super_secret_cookie_key
   name: sme_app_cookie
 
 credentials:
