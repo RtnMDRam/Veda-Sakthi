@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
 
@@ -59,6 +60,21 @@ gap:1rem !important;}
     .stTextArea {
         margin-top: -0.44em !important;
         margin-bottom: -0.55em !important;
+    }
+
+    .fullscreen-btn {
+        padding: 0.35rem 0.9rem !important;
+        border-radius: 10px !important;
+        border: 1px solid #d1d5db !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 0.78rem !important;
+        cursor: pointer;
+    }
+    .fullscreen-btn:hover {
+        background: #f8fafc !important;
+        border-color: #cbd5f5 !important;
     }
     textarea[data-baseweb="textarea"] {
         min-height: 44px !important;
@@ -375,6 +391,20 @@ def format_tamil_date(now: pd.Timestamp) -> str:
     return f"{tamil_date} / {gregorian}"
 
 
+def render_fullscreen_toggle():
+    """Render a button that lets the user enter/exit browser fullscreen."""
+    components.html(
+        """
+        <div style="display:flex;justify-content:flex-end;align-items:center;height:100%;">
+            <button class="fullscreen-btn" onclick="if (!document.fullscreenElement) {document.documentElement.requestFullscreen();} else {document.exitFullscreen();}">
+                Full Screen
+            </button>
+        </div>
+        """,
+        height=50,
+    )
+
+
 def render_header():
     now = pd.Timestamp.now()
     formatted_date = format_tamil_date(now)
@@ -461,7 +491,7 @@ def render_header():
 
     st.markdown("<div class='sme-header-wrapper'><div class='sme-header-content'>", unsafe_allow_html=True)
 
-    cols = st.columns([1.8, 4.0, 1.2], gap="small")
+    cols = st.columns([1.8, 3.2, 1.2, 1.4], gap="small")
 
     with cols[0]:
         st.markdown(f"<div class='sme-header-date'>{formatted_date}</div>", unsafe_allow_html=True)
@@ -475,6 +505,9 @@ def render_header():
 
     with cols[2]:
         st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
+
+    with cols[3]:
+        render_fullscreen_toggle()
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
