@@ -352,7 +352,7 @@ def render_header():
         .sme-header-container {
             background: linear-gradient(115deg, #e0e7ff 0%, #f3f4f6 100%);
             border-radius: 0;
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             margin: -1rem -1rem 1rem -1rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
@@ -360,20 +360,24 @@ def render_header():
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 2rem;
+            gap: 1.5rem;
         }
         .sme-header-left {
-            font-size: 0.95rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #1f2937;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         .sme-header-center {
             flex: 1;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.8rem;
             font-weight: 500;
             color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .sme-header-center .sme-name {
             font-weight: 700;
@@ -382,10 +386,11 @@ def render_header():
         .sme-header-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            flex-shrink: 0;
         }
         .sme-header-time {
-            font-size: 0.95rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #1f2937;
             white-space: nowrap;
@@ -393,13 +398,14 @@ def render_header():
         .sme-header-logout .stButton > button {
             border-radius: 8px;
             font-weight: 600;
-            padding: 0.5rem 1.2rem;
-            font-size: 0.9rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
             background: #ffffff;
             color: #111827;
             border: 1px solid #d1d5db;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             white-space: nowrap;
+            min-width: fit-content;
         }
         .sme-header-logout .stButton > button:hover {
             background: #f9fafb;
