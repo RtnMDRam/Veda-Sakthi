@@ -24,9 +24,6 @@ st.markdown(
 }
 .e196pkbe3{
 height:70px !important;}
-.e196pkbe2{
-
-gap:0 !important;}
 
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
