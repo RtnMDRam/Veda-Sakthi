@@ -1,105 +1,123 @@
-from pathlib import Path
-
-import pandas as pd
 import streamlit as st
+import pandas as pd
 
-hide_streamlit_style = """
+st.markdown("""
     <style>
-        [data-testid="stSidebar"] {display: none !important;}
-        [data-testid="stHeader"] {z-index: 1;}
-        .main .block-container {padding-top: 2rem;}
+    .block-container {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    header, footer { display: none !important; }
+    .main { margin-top: 0 !important; margin-bottom: 0 !important; }
+    .tight-label {
+        font-size: 0.85em !important;
+        font-weight: 500 !important;
+        line-height: 1.08;
+        margin-bottom: -0.34em !important;
+        margin-top: -0.51em !important;
+        padding-bottom:0 !important;
+        padding-top:0 !important;
+    }
+    .stTextArea {
+        margin-top: -0.44em !important;
+        margin-bottom: -0.55em !important;
+    }
+    textarea[data-baseweb="textarea"] {
+        min-height: 44px !important;
+        font-size: 0.98em !important;
+    }
+    .stTextArea label { display:none !important; }
+    .editable-vh45 {
+        height: 45vh !important;
+        min-height: 45vh !important;
+        max-height: 45vh !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        box-sizing: border-box;
+        background: none;
+    }
+    .cw-40-fixed {
+        height: 40vh !important;
+        min-height: 40vh !important;
+        max-height: 40vh !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: 1.035em !important;
+        line-height: 1.14 !important;
+        margin: 0 !important;
+        padding: 0 0.09em 0.28em 0.09em !important;  /* ZERO top padding! */
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: border-box;
+        background: none;
+    }
+    .cw-40-fixed strong { font-weight: 600 !important; }
     </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "whoami" not in st.session_state:
-    st.session_state.whoami = ""
+uploaded_file = st.file_uploader("Upload a bilingual Excel file (.xlsx)", type="xlsx")
 
-# Read SME display name from "SME Name" column in SME data file (CSV/XLSX)
-DATA_DIR = Path(__file__).resolve().parent
-SME_DATA_PATHS = [DATA_DIR / "SME_Data.csv", DATA_DIR / "SME_Data.xlsx"]
+if uploaded_file is not None:
+    df = pd.read_excel(uploaded_file)
+    st.success("File uploaded successfully!")
+    row = df.iloc[0]
+    vilakkam_val = row.get('விளக்கம்', '') or row.get('விளக்கம் ', '')
 
+    # Editable block: exactly 45vh, scrollable, top
+    st.markdown('<div class="editable-vh45">', unsafe_allow_html=True)
+    st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
+    tamil_q = st.text_area("", value=row.get('கேள்வி', ''), height=52, key="edit_q", label_visibility='collapsed')
 
-# Cache SME lookup to avoid re-reading the spreadsheet on every rerun.
-@st.cache_data
-def get_sme_name(username):
-    data_path = next((path for path in SME_DATA_PATHS if path.exists()), None)
-    if data_path is None:
-        return username
+    st.markdown('<div class="tight-label">விருப்பங்கள்</div>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2, gap="small")
+    with col1:
+        optA = st.text_area("", value="", key="optA", height=40, label_visibility='collapsed')
+    with col2:
+        optB = st.text_area("", value="", key="optB", height=40, label_visibility='collapsed')
+    col3, col4 = st.columns(2, gap="small")
+    with col3:
+        optC = st.text_area("", value="", key="optC", height=40, label_visibility='collapsed')
+    with col4:
+        optD = st.text_area("", value="", key="optD", height=40, label_visibility='collapsed')
 
-    try:
-        if data_path.suffix.lower() == ".csv":
-            df = pd.read_csv(data_path)
-        else:
-            df = pd.read_excel(data_path)
-    except ValueError as exc:
-        st.warning(f"Unable to read SME data file '{data_path.name}': {exc}")
-        return username
-    except Exception as exc:
-        st.warning(f"Unexpected error while reading '{data_path.name}': {exc}")
-        return username
+    cols = st.columns(2, gap="small")
+    with cols[0]:
+        st.markdown('<div class="tight-label">Glossary</div>', unsafe_allow_html=True)
+        gloss = st.text_area("", value="", key="gloss", height=40, label_visibility='collapsed')
+    with cols[1]:
+        st.markdown('<div class="tight-label">Answer</div>', unsafe_allow_html=True)
+        ans = st.text_area("", value=row.get('பதில் ', ''), key="ans", height=40, label_visibility='collapsed')
+    st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
+    tamil_exp = st.text_area("", value=vilakkam_val, height=175, key="edit_exp", label_visibility='collapsed')
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    row = df[df["username"] == username]
-    if not row.empty:
-        return row.iloc[0]["SME Name"]   # <-- Changed here!
-    return username
-
-if not st.session_state.logged_in:
-    st.title("Login")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-
-    if st.button("Login"):
-        if username and password == "Test123!":
-            st.session_state.logged_in = True
-            st.session_state.whoami = username
-            st.rerun()
-        else:
-            st.error("Incorrect username or password.")
-    st.stop()
-else:
-    sme_display_name = get_sme_name(st.session_state.whoami)
+    # Horizontal divider line: no margin, no padding, thin
     st.markdown(
-        f"<h3 style='text-align: center;'>Subject Matter Expert (SME) Panel for <u>{sme_display_name}</u></h3>",
-        unsafe_allow_html=True,
+        '<hr style="height:1.3px;border:none;background:#666;margin:0 0 0 0;padding:0;">',
+        unsafe_allow_html=True
     )
-    st.markdown("---", unsafe_allow_html=True)
 
-    col_link1, col_link_mid, col_link2 = st.columns([2.2, 1, 2.2])
-    with col_link1:
-        file_link = st.text_input("Paste the CSV/XLSX Link Given by Admin", "")
-    with col_link_mid:
-        load_file = st.button("Load", key="load_file")
-    with col_link2:
-        gloss_link = st.text_input("Glossary Upload Link from Drive", "")
-        load_gloss = st.button("Load", key="load_glossary")
-    st.markdown("---", unsafe_allow_html=True)
+    # Non-editable block: exactly 40vh, NO extra space above Tamil
+    st.markdown(f"""
+    <div class="cw-40-fixed">
+        <div><b>தமிழ்</b></div>
+        <div><strong>கேள்வி:</strong> {row.get('கேள்வி', '')}</div>
+        <div><strong>விருப்பங்கள்:</strong> {row.get('விருப்பங்கள் ', '')}</div>
+        <div><strong>பதில்:</strong> {row.get('பதில் ', '')}</div>
+        <div><strong>விளக்கம்:</strong> {vilakkam_val}</div>
+        <div style="height:0.13em"></div>
+        <div><b>English</b></div>
+        <div><strong>Question:</strong> {row.get('question ', '')}</div>
+        <div><strong>Options:</strong> {row.get('questionOptions', '')}</div>
+        <div><strong>Answer:</strong> {row.get('answers ', '')}</div>
+        <div><strong>Explanation:</strong> {row.get('explanation', '')}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    bt_col1, bt_col2, bt_col3, bt_col4, bt_col5, bt_col6 = st.columns([1.3, 1.6, 1.1, 1.1, 1.6, 1.3])
-    with bt_col1:
-        if st.button("Hi! Glossary"):
-            st.session_state['show_glossary'] = True
-    with bt_col2:
-        st.button("Save & Cont..", key="save_continue")
-    with bt_col3:
-        st.write("Row # A")
-    with bt_col4:
-        st.write("_id Number")
-    with bt_col5:
-        st.write("Row # z")
-    with bt_col6:
-        if st.button("Save & Next"):
-            st.session_state['save_and_next'] = True
-
-    b_col1, b_col2, b_col3 = st.columns([1.15, 2.6, 1.15])
-    with b_col1:
-        pass
-    with b_col2:
-        pass
-    with b_col3:
-        if st.button("Save File", key="save_file"):
-            st.session_state['save_file'] = True
-
-    # ... further SME panel logic ...
+else:
+    st.info("Please upload your bilingual Excel file to begin.")
