@@ -1,11 +1,12 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 
 st.set_page_config(page_title="SME Panel", layout="wide")
 st.title("Subject Matter Expert (SME) Panel")
 
+# Try to read data from SME_Data.xlsx
 try:
-    df = pd.read_excel("SME_Data.xlsx")   # <-- READ XLSX
+    df = pd.read_excel("SME_Data.xlsx")   # Use Excel format
     if df.empty:
         st.warning("The SME data file is empty. Please check the file and re-upload.")
     else:
