@@ -1,6 +1,18 @@
 import streamlit as st
 import datetime
 
+# Hides the Streamlit sidebar COMPLETELY
+hide_streamlit_style = """
+    <style>
+        [data-testid="stSidebar"] {display: none !important;}
+        [data-testid="stHeader"] {z-index: 1;}
+        .main .block-container {
+            padding-top: 2rem;
+        }
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 USERNAME = "admin1"
 PASSWORD = "Test123!"
 
@@ -12,10 +24,6 @@ if not st.session_state.logged_in:
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
-
-    # Optional debug: see exactly what you typed
-    st.write(f"Username entered: '{username}'")
-    st.write(f"Password entered: '{password}'")
 
     if st.button("Login"):
         if username == USERNAME and password == PASSWORD:
@@ -83,4 +91,4 @@ else:
         if st.button("Save File", key="save_file"):
             st.session_state['save_file'] = True
 
-    # Add the rest of your SME panel UI/content here
+    # ...rest of your SME content...
