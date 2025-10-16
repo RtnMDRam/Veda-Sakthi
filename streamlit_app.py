@@ -147,8 +147,21 @@ def format_size(size_bytes: Optional[int]) -> str:
     return f"{size_bytes / 1024:.1f} KB"
 
 
-def render_dropzone_caption(filename: Optional[str], size_bytes: Optional[int]) -> None:
-    """Inject CSS to show the active filename inside the uploader dropzone."""
+def style_file_uploader(filename: Optional[str], size_bytes: Optional[int]) -> None:
+    """Adjust the file uploader appearance."""
+    st.markdown(
+        """
+        <style>
+        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] small,
+        section[data-testid="stFileUploader"] span[data-testid="stFileUploaderFileName"],
+        section[data-testid="stFileUploader"] span[data-testid="stFileUploaderFileSize"] {
+            display: none !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     if not filename:
         return
 
@@ -160,9 +173,6 @@ def render_dropzone_caption(filename: Optional[str], size_bytes: Optional[int]) 
         f"""
         <style>
         section[data-testid="stFileUploader"] div[data-testid="stFileUploaderInstructions"] {{
-            display: none !important;
-        }}
-        section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] small {{
             display: none !important;
         }}
         section[data-testid="stFileUploader"] div[data-testid="stFileUploaderDropzone"] div[aria-live="polite"] {{
@@ -221,7 +231,7 @@ question_df: Optional[pd.DataFrame] = st.session_state.get("question_df")
 if question_df is None:
     st.stop()
 
-render_dropzone_caption(
+style_file_uploader(
     st.session_state.get("question_source"),
     st.session_state.get("question_source_size"),
 )
