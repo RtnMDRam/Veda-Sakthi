@@ -16,6 +16,8 @@ st.markdown(
         margin-bottom: 0 !important;
     }
     header, footer { display: none !important; }
+    [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
+    body { overflow-x: hidden; }
     .main { margin-top: 0 !important; margin-bottom: 0 !important; }
     .tight-label {
         font-size: 0.85em !important;
