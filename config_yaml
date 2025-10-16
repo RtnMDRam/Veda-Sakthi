@@ -1,7 +1,7 @@
 cookie:
   expiry_days: 30
-  key: your_cookie_key
-  name: your_cookie_name
+  key: super_secret_cookie_key   # Change this to a long random string for production
+  name: sme_app_cookie
 
 credentials:
   usernames:
@@ -13,133 +13,97 @@ credentials:
         - admin
     sme1:
       email: sme1@yourdomain.com
-      name: SME 1
+      name: SME One
       password: sme1password
       roles:
         - SME
     sme2:
       email: sme2@yourdomain.com
-      name: SME 2
+      name: SME Two
       password: sme2password
       roles:
         - SME
     sme3:
-      email: sme1@yourdomain.com
-      name: SME 1
-      password: sme1password
+      email: sme3@yourdomain.com
+      name: SME Three
+      password: sme3password
       roles:
         - SME
     sme4:
-      email: sme2@yourdomain.com
-      name: SME 2
-      password: sme2password
+      email: sme4@yourdomain.com
+      name: SME Four
+      password: sme4password
       roles:
         - SME
     sme5:
-      email: sme1@yourdomain.com
-      name: SME 1
-      password: sme1password
+      email: sme5@yourdomain.com
+      name: SME Five
+      password: sme5password
       roles:
         - SME
     sme6:
-      email: sme2@yourdomain.com
-      name: SME 2
-      password: sme2password
+      email: sme6@yourdomain.com
+      name: SME Six
+      password: sme6password
       roles:
         - SME
     sme7:
-      email: sme1@yourdomain.com
-      name: SME 1
-      password: sme1password
+      email: sme7@yourdomain.com
+      name: SME Seven
+      password: sme7password
       roles:
         - SME
     sme8:
-      email: sme2@yourdomain.com
-      name: SME 2
-      password: sme2password
+      email: sme8@yourdomain.com
+      name: SME Eight
+      password: sme8password
       roles:
         - SME
     sme9:
-      email: sme1@yourdomain.com
-      name: SME 1
-      password: sme1password
+      email: sme9@yourdomain.com
+      name: SME Nine
+      password: sme9password
       roles:
         - SME
     sme10:
-      email: sme2@yourdomain.com
-      name: SME 2
-      password: sme2password
-      roles:
-        - SME
-    sme11:
-      email: sme1@yourdomain.com
-      name: SME 1
-      password: sme1password
-      roles:
-        - SME
-    sme12:
-      email: sme2@yourdomain.com
-      name: SME 2
-      password: sme2password
-      roles:
-        - SME
-    sme13:
-      email: sme1@yourdomain.com
-      name: SME 1
-      password: sme1password
-      roles:
-        - SME
-    sme14:
-      email: sme2@yourdomain.com
-      name: SME 2
-      password: sme2password
-      roles:
-        - SME
-    sme15:
-      email: sme1@yourdomain.com
-      name: SME 1
-      password: sme1password
-      roles:
-        - SME
-    sme16:
-      email: sme2@yourdomain.com
-      name: SME 2
-      password: sme2password
+      email: sme10@yourdomain.com
+      name: SME Ten
+      password: sme10password
       roles:
         - SME
     translator1:
       email: translator1@yourdomain.com
-      name: Translator 1
-      password: translatorpassword
+      name: Translator One
+      password: translatorpassword1
       roles:
         - translator
     translator2:
-      email: translator1@yourdomain.com
-      name: Translator 1
-      password: translatorpassword
+      email: translator2@yourdomain.com
+      name: Translator Two
+      password: translatorpassword2
       roles:
         - translator
     translator3:
-      email: translator1@yourdomain.com
-      name: Translator 1
-      password: translatorpassword
+      email: translator3@yourdomain.com
+      name: Translator Three
+      password: translatorpassword3
       roles:
         - translator
     translator4:
-      email: translator1@yourdomain.com
-      name: Translator 1
-      password: translatorpassword
+      email: translator4@yourdomain.com
+      name: Translator Four
+      password: translatorpassword4
       roles:
         - translator
     translator5:
-      email: translator1@yourdomain.com
-      name: Translator 1
-      password: translatorpassword
+      email: translator5@yourdomain.com
+      name: Translator Five
+      password: translatorpassword5
       roles:
         - translator
     translator6:
-      email: translator1@yourdomain.com
-      name: Translator 1
-      password: translatorpassword
+      email: translator6@yourdomain.com
+      name: Translator Six
+      password: translatorpassword6
       roles:
         - translator
