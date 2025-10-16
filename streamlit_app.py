@@ -141,6 +141,19 @@ def set_dataset(df: pd.DataFrame, source_name: str) -> None:
     st.session_state["question_index"] = 0
 
 
+def trigger_rerun() -> None:
+    """Trigger a Streamlit rerun with backwards compatibility."""
+    rerun_fn = getattr(st, "rerun", None)
+    if callable(rerun_fn):
+        rerun_fn()
+        return
+
+    # For older versions, fall back to experimental_rerun if available.
+    exp_rerun = getattr(st, "experimental_rerun", None)
+    if callable(exp_rerun):
+        exp_rerun()
+
+
 # --- INITIAL DATA LOAD ---
 uploaded_file = st.file_uploader("Upload a bilingual Excel file (.xlsx)", type="xlsx")
 
@@ -179,11 +192,11 @@ with col_next:
 
 if prev_clicked:
     st.session_state["question_index"] = max(0, current_index - 1)
-    st.experimental_rerun()
+    trigger_rerun()
 
 if next_clicked:
     st.session_state["question_index"] = min(total_rows - 1, current_index + 1)
-    st.experimental_rerun()
+    trigger_rerun()
 
 current_index = st.session_state["question_index"]
 row = question_df.iloc[current_index]
