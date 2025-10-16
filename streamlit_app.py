@@ -26,7 +26,8 @@ st.markdown(
 height:70px !important;}
 .sme-header-time{
 text-align:end !important;}
-
+.st-emotion-cache-r3ry0f{
+gap:1rem !important;}
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
     body { overflow-x: hidden; }
