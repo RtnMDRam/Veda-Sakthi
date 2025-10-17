@@ -286,92 +286,190 @@ def require_login() -> None:
     st.markdown(
         """
         <style>
-        .login-wrapper {
-            max-width: 420px;
-            margin: 10vh auto 4vh;
-            padding: 2.5rem 2.4rem 2.2rem;
-            border-radius: 22px;
-            background: #ffffff;
-            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+        div[data-testid="stForm"] {
+            max-width: 430px;
+            margin: 10vh auto 6vh;
+            position: relative;
+            padding: 0 1.2rem;
         }
-        .login-logo {
-            width: 92px;
-            height: 92px;
-            margin: 0 auto 1.6rem;
+        div[data-testid="stForm"]::before,
+        div[data-testid="stForm"]::after {
+            content: "";
+            position: absolute;
+            inset: auto;
+            border-radius: 999px;
+            filter: blur(80px);
+            opacity: 0.6;
+            z-index: 0;
+        }
+        div[data-testid="stForm"]::before {
+            top: -14vh;
+            left: 10%;
+            width: 320px;
+            height: 320px;
+            background: rgba(99, 102, 241, 0.22);
+        }
+        div[data-testid="stForm"]::after {
+            bottom: -18vh;
+            right: 6%;
+            width: 280px;
+            height: 280px;
+            background: rgba(244, 114, 182, 0.24);
+        }
+        div[data-testid="stForm"] > form {
+            background: rgba(255, 255, 255, 0.96);
+            padding: 2.9rem 2.7rem 2.5rem;
+            border-radius: 28px;
+            box-shadow: 0 30px 70px rgba(15, 23, 42, 0.14);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            position: relative;
+            overflow: hidden;
+        }
+        div[data-testid="stForm"] > form::before {
+            content: "";
+            position: absolute;
+            inset: -140px -180px auto -180px;
+            height: 280px;
+            background: radial-gradient(circle at center, rgba(99, 102, 241, 0.24), rgba(59, 130, 246, 0));
+            z-index: 0;
+            filter: blur(4px);
+        }
+        div[data-testid="stForm"] > form > div {
+            position: relative;
+            z-index: 1;
+        }
+        div[data-testid="stForm"] .login-logo {
+            width: 86px;
+            height: 86px;
+            margin: 0 auto 1.5rem;
             border-radius: 24px;
-            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            background: linear-gradient(135deg, #eef2ff, #dbeafe);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             letter-spacing: 0.08em;
             color: #3730a3;
-            font-size: 1.05rem;
+            font-size: 1rem;
+            box-shadow: 0 16px 36px rgba(79, 70, 229, 0.2);
         }
-        .login-wrapper h3 {
+        div[data-testid="stForm"] .login-title {
             text-align: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #111827;
             margin-bottom: 0.35rem;
         }
-        .login-wrapper p {
+        div[data-testid="stForm"] .login-subtitle {
             text-align: center;
-            margin-bottom: 1.6rem;
+            font-size: 0.96rem;
             color: #64748b;
-            font-size: 0.93rem;
+            margin-bottom: 2.3rem;
         }
-        .login-wrapper [data-testid="baseButton-primary"] button,
-        .login-wrapper [data-testid="baseButton-secondary"] button {
-            width: 100%;
-            padding: 0.65rem 0;
+        div[data-testid="stForm"] .stTextInput {
+            margin-bottom: 1.35rem;
+        }
+        div[data-testid="stForm"] .stTextInput label {
             font-weight: 600;
-            border-radius: 10px;
-            background: #4338ca;
-            border: none;
+            font-size: 0.79rem;
+            color: #1f2937;
+            margin-bottom: 0.45rem;
         }
-        .login-wrapper .stTextInput input {
-            border-radius: 10px;
+        div[data-testid="stForm"] .stTextInput > div > div {
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.18);
+            transition: all 0.2s ease;
+        }
+        div[data-testid="stForm"] .stTextInput > div > div:hover {
+            border-color: #cbd5f5;
+        }
+        div[data-testid="stForm"] .stTextInput > div > div:focus-within {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+        }
+        div[data-testid="stForm"] input {
+            padding: 0.72rem 1rem;
+            font-size: 0.92rem;
+            color: #0f172a;
+            background: transparent;
+        }
+        div[data-testid="stForm"] .stFormSubmitButton {
+            margin-top: 0.4rem;
+        }
+        div[data-testid="stForm"] .stFormSubmitButton button {
+            width: 100%;
+            height: 2.85rem;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.96rem;
+            border: none;
+            box-shadow: 0 14px 36px rgba(99, 102, 241, 0.34);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        div[data-testid="stForm"] .stFormSubmitButton button:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #4338ca, #4f46e5);
+            box-shadow: 0 18px 42px rgba(79, 70, 229, 0.32);
+        }
+        div[data-testid="stForm"] .stAlert {
+            border-radius: 12px;
+        }
+        @media (max-width: 640px) {
+            div[data-testid="stForm"] {
+                margin: 7vh auto 4vh;
+                padding: 0 0.4rem;
+            }
+            div[data-testid="stForm"] > form {
+                padding: 2.4rem 1.9rem 2.2rem;
+            }
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    with st.container():
-        st.markdown("<div class='login-wrapper'>", unsafe_allow_html=True)
-        st.markdown("<div class='login-logo'>LOGO</div>", unsafe_allow_html=True)
-        st.markdown("<h3>SME Workspace</h3>", unsafe_allow_html=True)
-        st.markdown("<p>Sign in with your SME account to continue.</p>", unsafe_allow_html=True)
+    with st.form("sme_login_form", clear_on_submit=False):
+        st.markdown(
+            """
+            <div class="login-logo">LOGO</div>
+            <h3 class="login-title">SME Workspace</h3>
+            <p class="login-subtitle">Sign in with your SME account to continue.</p>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        with st.form("sme_login_form", clear_on_submit=False):
-            email = st.text_input("Email", placeholder="name@example.com")
-            password = st.text_input("Password", placeholder="Enter your password", type="password")
-            submitted = st.form_submit_button("Sign In", use_container_width=True)
+        email = st.text_input("Email", placeholder="name@example.com")
+        password = st.text_input("Password", placeholder="Enter your password", type="password")
+        submitted = st.form_submit_button("Sign In", use_container_width=True)
 
-        if submitted:
-            if not email or not password:
-                st.error("Email and password are required.")
+    if submitted:
+        if not email or not password:
+            st.error("Email and password are required.")
+        else:
+            normalized = email.strip().lower()
+            normalized_emails = credentials_df["Email"].astype(str).str.strip().str.lower()
+            match = credentials_df[normalized_emails == normalized]
+
+            if match.empty:
+                st.error("Invalid email or password.")
             else:
-                normalized = email.strip().lower()
-                normalized_emails = credentials_df["Email"].astype(str).str.strip().str.lower()
-                match = credentials_df[normalized_emails == normalized]
-
-                if match.empty:
+                record = match.iloc[0]
+                expected_password = str(record.get("Password", "")).strip()
+                if password.strip() != expected_password:
                     st.error("Invalid email or password.")
                 else:
-                    record = match.iloc[0]
-                    expected_password = str(record.get("Password", "")).strip()
-                    if password.strip() != expected_password:
-                        st.error("Invalid email or password.")
-                    else:
-                        email_value = record.get("Email", "").strip()
-                        st.session_state["authenticated"] = True
-                        st.session_state["sme_email"] = email_value
-                        st.session_state["sme_display_name"] = (
-                            record.get("SME Name") or record.get("SME Name ", "") or email_value
-                        )
-                        st.session_state["sme_record"] = record.to_dict()
-                        safe_rerun()
-
-        st.markdown("</div>", unsafe_allow_html=True)
+                    email_value = record.get("Email", "").strip()
+                    st.session_state["authenticated"] = True
+                    st.session_state["sme_email"] = email_value
+                    st.session_state["sme_display_name"] = (
+                        record.get("SME Name") or record.get("SME Name ", "") or email_value
+                    )
+                    st.session_state["sme_record"] = record.to_dict()
+                    safe_rerun()
 
     st.stop()
 
