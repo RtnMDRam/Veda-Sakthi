@@ -53,7 +53,7 @@ gap:1rem !important;}
     
 }
 
-.stLayoutWrapper .e196pkbe2
+.st-emotion-cache-18kf3ut .e196pkbe2
 {
 
 background:red
