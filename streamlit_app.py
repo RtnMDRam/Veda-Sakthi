@@ -25,7 +25,7 @@ st.markdown(
 .e16n7gab0{
     flex-direction: row !important;
 }
-.stHorizontalBlock{
+.st-emotion-cache-18kf3ut{
     background: #03A9F4 !important;;
     color: #fff !important;
     border-radius: 12px;
