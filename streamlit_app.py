@@ -33,15 +33,25 @@ text-align:end !important;}
 gap:1rem !important;}
 
 .sme-header-date {
-    font-size: 1rem !important;;
+    font-size: 1rem !important;
+     color: #fff !important;
     }
     .sme-header-center {
     
-    font-size: 1rem !important;;
+    font-size: 1rem !important;
+     color: #fff !important;
     }
 .sme-header-time {
     
-    font-size: 1rem !important;;
+    font-size: 1rem !important;
+     color: #fff !important;
+    }
+
+    .stLayoutWrapper{
+    background: #03A9F4 !important;;
+    color: #fff !important;
+    border-radius: 12px;
+    padding: 3px 21px;
     }
 
     header, footer { display: none !important; }
@@ -109,10 +119,11 @@ gap:1rem !important;}
         text-align: center;
         white-space: nowrap;
     }
-    .nav-save-btn .stButton > button {
+    .nav-btn .stButton > button {
         padding: 0.35rem 0.75rem !important;
         font-size: 0.78rem !important;
         border-radius: 8px !important;
+        width: 5.5rem;
     }
     </style>
     """,
@@ -595,39 +606,44 @@ row = question_df.iloc[current_index]
 row_id = str(row.get(ROW_ID_COL, "") or "")
 rows_label = f"({current_index + 1} of {total_rows} rows)"
 
-cols = st.columns([1.3, 1.8, 0.9, 0.9, 0.9, 0.9], gap="small")
+nav_cols = st.columns([1.4, 1.9, 4.7], gap="small")
 
-with cols[0]:
+with nav_cols[0]:
     st.markdown(f"<div class='nav-id'>ID {row_id}</div>", unsafe_allow_html=True)
 
-with cols[1]:
+with nav_cols[1]:
     st.markdown(f"<div class='nav-rows'>{rows_label}</div>", unsafe_allow_html=True)
 
-with cols[2]:
-    prev_clicked = st.button(
-        "Back",
-        use_container_width=True,
-        disabled=current_index <= 0,
-        key="nav_prev",
-    )
+with nav_cols[2]:
+    button_cols = st.columns([10, 1, 1, 1, 1], gap="small")
 
-with cols[3]:
-    next_clicked = st.button(
-        "Next",
-        use_container_width=True,
-        disabled=current_index >= total_rows - 1,
-        key="nav_next",
-    )
+    with button_cols[1]:
+        st.markdown("<div class='nav-btn'>", unsafe_allow_html=True)
+        prev_clicked = st.button(
+            "Back",
+            disabled=current_index <= 0,
+            key="nav_prev",
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
 
-with cols[4]:
-    st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
-    save_clicked = st.button("Save", key="nav_save")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with button_cols[2]:
+        st.markdown("<div class='nav-btn'>", unsafe_allow_html=True)
+        next_clicked = st.button(
+            "Next",
+            disabled=current_index >= total_rows - 1,
+            key="nav_next",
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
 
-with cols[5]:
-    st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
-    logout_clicked = st.button("Logout", key="nav_logout")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with button_cols[3]:
+        st.markdown("<div class='nav-btn'>", unsafe_allow_html=True)
+        save_clicked = st.button("Save", key="nav_save")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with button_cols[4]:
+        st.markdown("<div class='nav-btn'>", unsafe_allow_html=True)
+        logout_clicked = st.button("Logout", key="nav_logout")
+        st.markdown("</div>", unsafe_allow_html=True)
 
 if prev_clicked:
     st.session_state["question_index"] = max(0, current_index - 1)
