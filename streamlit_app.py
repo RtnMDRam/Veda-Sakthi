@@ -4,7 +4,6 @@ from typing import List, Optional
 
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
 
@@ -53,12 +52,9 @@ gap:1rem !important;}
     
 }
 
-.sme-header-row > div[data-testid="stHorizontalBlock"] {
-  background-color: red !important;
-  border-radius: 8px;
-  padding: 10px 20px;
-  color: white;
-}
+.
+
+
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
     body { overflow-x: hidden; }
@@ -77,20 +73,6 @@ gap:1rem !important;}
         margin-bottom: -0.55em !important;
     }
 
-    .fullscreen-btn {
-        padding: 0.35rem 0.9rem !important;
-        border-radius: 10px !important;
-        border: 1px solid #d1d5db !important;
-        background: #ffffff !important;
-        color: #0f172a !important;
-        font-weight: 600 !important;
-        font-size: 0.78rem !important;
-        cursor: pointer;
-    }
-    .fullscreen-btn:hover {
-        background: #f8fafc !important;
-        border-color: #cbd5f5 !important;
-    }
     textarea[data-baseweb="textarea"] {
         min-height: 44px !important;
         font-size: 0.98em !important;
@@ -406,20 +388,6 @@ def format_tamil_date(now: pd.Timestamp) -> str:
     return f"{tamil_date} / {gregorian}"
 
 
-def render_fullscreen_toggle():
-    """Render a button that lets the user enter/exit browser fullscreen."""
-    components.html(
-        """
-        <div style="display:flex;justify-content:flex-end;align-items:center;height:100%;">
-            <button class="fullscreen-btn" onclick="if (!document.fullscreenElement) {document.documentElement.requestFullscreen();} else {document.exitFullscreen();}">
-                Full Screen
-            </button>
-        </div>
-        """,
-        height=50,
-    )
-
-
 def render_header():
     now = pd.Timestamp.now()
     formatted_date = format_tamil_date(now)
@@ -464,40 +432,11 @@ def render_header():
             font-weight: 700;
             color: #111827;
         }
-        .sme-header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-shrink: 0;
-        }
         .sme-header-time {
             font-size: 0.8rem;
             font-weight: 600;
             color: #1f2937;
             white-space: nowrap;
-        }
-        .sme-header-button-container {
-            display: inline-block;
-        }
-        .sme-header-button-container .stButton {
-            display: inline-block;
-        }
-        .sme-header-button-container .stButton > button {
-            border-radius: 8px;
-            font-weight: 600;
-            padding: 0.4rem 1rem !important;
-            font-size: 0.8rem !important;
-            background: #ffffff !important;
-            color: #111827 !important;
-            border: 1px solid #d1d5db !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-            min-height: unset !important;
-            height: auto !important;
-        }
-        .sme-header-button-container .stButton > button:hover {
-            background: #f9fafb !important;
-            border-color: #9ca3af !important;
         }
         </style>
         """,
@@ -506,7 +445,7 @@ def render_header():
 
     st.markdown("<div class='sme-header-wrapper'><div class='sme-header-content'>", unsafe_allow_html=True)
 
-    cols = st.columns([1.8, 3.2, 1.2, 1.4], gap="small")
+    cols = st.columns([1.8, 3.2, 1.2], gap="small")
 
     with cols[0]:
         st.markdown(f"<div class='sme-header-date'>{formatted_date}</div>", unsafe_allow_html=True)
@@ -520,9 +459,6 @@ def render_header():
 
     with cols[2]:
         st.markdown(f"<div class='sme-header-time'>{time_str}</div>", unsafe_allow_html=True)
-
-    with cols[3]:
-        render_fullscreen_toggle()
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
