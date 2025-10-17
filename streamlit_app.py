@@ -300,7 +300,8 @@ def require_login() -> None:
             border-radius: 999px;
             filter: blur(80px);
             opacity: 0.6;
-            z-index: 0;
+            z-index: -1;
+            pointer-events: none;
         }
         div[data-testid="stForm"]::before {
             top: -14vh;
@@ -324,6 +325,7 @@ def require_login() -> None:
             border: 1px solid rgba(148, 163, 184, 0.18);
             position: relative;
             overflow: hidden;
+            z-index: 1;
         }
         div[data-testid="stForm"] > form::before {
             content: "";
@@ -333,6 +335,7 @@ def require_login() -> None:
             background: radial-gradient(circle at center, rgba(99, 102, 241, 0.24), rgba(59, 130, 246, 0));
             z-index: 0;
             filter: blur(4px);
+            pointer-events: none;
         }
         div[data-testid="stForm"] > form > div {
             position: relative;
