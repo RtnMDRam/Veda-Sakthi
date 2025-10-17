@@ -46,7 +46,11 @@ gap:1rem !important;}
     }
 .sme-header-center .sme-name {
     font-weight: 700;
-    
+
+
+    .st-emotion-cache-tn0cau {
+  
+    gap: 0.75rem !important;; 
     
 }
 .stAppHeader{
