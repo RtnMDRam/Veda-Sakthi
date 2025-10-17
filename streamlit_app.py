@@ -35,20 +35,28 @@ gap:1rem !important;}
 
 .sme-header-date {
     font-size: 1rem !important;
+    background: #2196F3;
+    padding: 12px;
   
     }
     .sme-header-center {
     
     font-size: 1rem !important;
+    background: #2196F3;
+    padding: 12px;
     
     }
 .sme-header-time {
     
     font-size: 1rem !important;
+    background: #2196F3;
+    padding: 12px;
    
     }
 .sme-header-center .sme-name {
     font-weight: 700;
+    background: #2196F3;
+    padding: 12px;
     
 }
 
