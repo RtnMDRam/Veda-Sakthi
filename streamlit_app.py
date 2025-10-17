@@ -53,66 +53,55 @@ gap:1rem !important;}
     gap: 0.75rem !important;; 
     
 }
-/* 🔙 BACK button */
-.st-key-nav_prev button[data-testid="stBaseButton-secondary"] {
-  background-color: #b0b0b0 !important;   /* Light gray */
-  color: #000 !important;
-  border: none;
+/* Common style for all four buttons */
+.st-key-nav_prev button[data-testid="stBaseButton-secondary"],
+.st-key-nav_next button[data-testid="stBaseButton-secondary"],
+.st-key-nav_save button[data-testid="stBaseButton-secondary"],
+.st-key-nav_logout button[data-testid="stBaseButton-secondary"] {
+  width: 100px;                 /* same width for all */
+  height: 36px;                 /* moderate compact height */
+  font-size: 14px;
   border-radius: 6px;
-  padding: 8px 20px;
   font-weight: 600;
+  border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+/* Individual color schemes */
+.st-key-nav_prev button[data-testid="stBaseButton-secondary"] {
+  background-color: #b0b0b0 !important;
+  color: #000 !important;
 }
 .st-key-nav_prev button[data-testid="stBaseButton-secondary"]:hover {
   background-color: #8c8c8c !important;
   color: #fff !important;
 }
 
-/* ⏭️ NEXT button */
 .st-key-nav_next button[data-testid="stBaseButton-secondary"] {
-  background-color: #007bff !important;   /* Blue */
+  background-color: #007bff !important;
   color: #fff !important;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 .st-key-nav_next button[data-testid="stBaseButton-secondary"]:hover {
   background-color: #0056b3 !important;
 }
 
-/* 💾 SAVE button */
 .st-key-nav_save button[data-testid="stBaseButton-secondary"] {
-  background-color: #28a745 !important;   /* Green */
+  background-color: #28a745 !important;
   color: #fff !important;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 .st-key-nav_save button[data-testid="stBaseButton-secondary"]:hover {
   background-color: #1e7e34 !important;
 }
 
-/* 🚪 LOGOUT button */
 .st-key-nav_logout button[data-testid="stBaseButton-secondary"] {
-  background-color: #dc3545 !important;   /* Red */
+  background-color: #dc3545 !important;
   color: #fff !important;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 .st-key-nav_logout button[data-testid="stBaseButton-secondary"]:hover {
   background-color: #a71d2a !important;
 }
+
 .stAppHeader{
 display:none !important:}
 
