@@ -25,8 +25,6 @@ st.markdown(
 .e16n7gab0{
     flex-direction: row !important;
 }
-.e196pkbe2{
-background:#ccc !important;}
 
 .e196pkbe3{
 height:70px !important;}
