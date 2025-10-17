@@ -54,8 +54,8 @@ gap:1rem !important;}
     
 }
 button[data-testid="stBaseButton-secondary"] {
-  background-color: #e60000 !important; 
-  color: white !important;             
+  background-color: #fff !important; 
+  color: #4d4d4d !important;             
   font-weight: 600;
   border: none;
   border-radius: 8px;
@@ -66,7 +66,7 @@ button[data-testid="stBaseButton-secondary"] {
 
 
 button[data-testid="stBaseButton-secondary"]:hover {
-  background-color: #b80000 !important;
+  background-color: #ccc !important;
   transform: scale(1.03);
 }
 .stAppHeader{
