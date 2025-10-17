@@ -53,6 +53,22 @@ gap:1rem !important;}
     gap: 0.75rem !important;; 
     
 }
+button[data-testid="stBaseButton-secondary"] {
+  background-color: #e60000 !important; 
+  color: white !important;             
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+
+button[data-testid="stBaseButton-secondary"]:hover {
+  background-color: #b80000 !important;
+  transform: scale(1.03);
+}
 .stAppHeader{
 display:none !important:}
 
