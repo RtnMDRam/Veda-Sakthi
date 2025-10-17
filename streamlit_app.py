@@ -53,21 +53,65 @@ gap:1rem !important;}
     gap: 0.75rem !important;; 
     
 }
-button[data-testid="stBaseButton-secondary"] {
-  background-color: #fff !important; 
-  color: #4d4d4d !important;             
+/* 🔙 BACK button */
+.st-key-nav_prev button[data-testid="stBaseButton-secondary"] {
+  background-color: #b0b0b0 !important;   /* Light gray */
+  color: #000 !important;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
   font-weight: 600;
- 
-  border-radius: 9px;
-  padding: 10px 22px;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
+}
+.st-key-nav_prev button[data-testid="stBaseButton-secondary"]:hover {
+  background-color: #8c8c8c !important;
+  color: #fff !important;
 }
 
+/* ⏭️ NEXT button */
+.st-key-nav_next button[data-testid="stBaseButton-secondary"] {
+  background-color: #007bff !important;   /* Blue */
+  color: #fff !important;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.st-key-nav_next button[data-testid="stBaseButton-secondary"]:hover {
+  background-color: #0056b3 !important;
+}
 
-button[data-testid="stBaseButton-secondary"]:hover {
-  background-color: #ccc !important;
-  transform: scale(1.03);
+/* 💾 SAVE button */
+.st-key-nav_save button[data-testid="stBaseButton-secondary"] {
+  background-color: #28a745 !important;   /* Green */
+  color: #fff !important;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.st-key-nav_save button[data-testid="stBaseButton-secondary"]:hover {
+  background-color: #1e7e34 !important;
+}
+
+/* 🚪 LOGOUT button */
+.st-key-nav_logout button[data-testid="stBaseButton-secondary"] {
+  background-color: #dc3545 !important;   /* Red */
+  color: #fff !important;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.st-key-nav_logout button[data-testid="stBaseButton-secondary"]:hover {
+  background-color: #a71d2a !important;
 }
 .stAppHeader{
 display:none !important:}
