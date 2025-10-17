@@ -25,8 +25,6 @@ st.markdown(
     flex-direction: row !important;
 }
 
-.e196pkbe3{
-height:70px !important;}
 .sme-header-time{
 text-align:end !important;}
 .st-emotion-cache-r3ry0f{
