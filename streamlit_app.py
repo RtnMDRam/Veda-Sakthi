@@ -50,7 +50,7 @@ gap:1rem !important;}
     font-weight: 700;
      color: #fff !important;
 }
-    .stLayoutWrapper{
+    .st-emotion-cache-18kf3ut .e196pkbe3{
     background: #03A9F4 !important;;
     color: #fff !important;
     border-radius: 12px;
