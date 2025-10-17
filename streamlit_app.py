@@ -34,21 +34,21 @@ gap:1rem !important;}
 
 .sme-header-date {
     font-size: 1rem !important;
-     color: #fff !important;
+  
     }
     .sme-header-center {
     
     font-size: 1rem !important;
-     color: #fff !important;
+    
     }
 .sme-header-time {
     
     font-size: 1rem !important;
-     color: #fff !important;
+   
     }
 .sme-header-center .sme-name {
     font-weight: 700;
-     color: #fff !important;
+    
 }
     .st-emotion-cache-18kf3ut .e196pkbe3{
     background: #03A9F4 !important;;
