@@ -53,12 +53,12 @@ gap:1rem !important;}
     
 }
 
-.st-emotion-cache-18kf3ut .st-emotion-cache-1permvm
-{
-
-background:red
+.sme-header-row > div[data-testid="stHorizontalBlock"] {
+  background-color: red !important;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
 }
-
     header, footer { display: none !important; }
     [data-testid="stSidebar"], [data-testid="stSidebarNav"] { display: none !important; }
     body { overflow-x: hidden; }
