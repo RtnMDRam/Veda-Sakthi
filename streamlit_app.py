@@ -49,8 +49,9 @@ gap:1rem !important;}
     
     
 }
+.stAppHeader{
+display:none !important:}
 
-.
 
 
     header, footer { display: none !important; }
