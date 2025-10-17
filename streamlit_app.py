@@ -57,8 +57,8 @@ button[data-testid="stBaseButton-secondary"] {
   background-color: #fff !important; 
   color: #4d4d4d !important;             
   font-weight: 600;
-  border: none;
-  border-radius: 8px;
+ 
+  border-radius: 9px;
   padding: 10px 22px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
