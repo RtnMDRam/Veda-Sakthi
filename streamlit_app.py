@@ -25,12 +25,7 @@ st.markdown(
 .e16n7gab0{
     flex-direction: row !important;
 }
-.st-emotion-cache-18kf3ut{
-    background: #03A9F4 !important;;
-    color: #fff !important;
-    border-radius: 12px;
-    padding: 3px 21px;
-    }
+
 .e196pkbe3{
 height:70px !important;}
 .sme-header-time{
