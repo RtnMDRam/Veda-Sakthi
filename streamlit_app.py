@@ -1,4 +1,6 @@
 import json
+import re
+from io import BytesIO
 from pathlib import Path
 from typing import List, Optional
 
@@ -231,6 +233,10 @@ def set_dataset(
     source_type: str = "upload",
 ) -> None:
     """Store the active dataframe in session state."""
+    st.session_state.pop("download_ready", None)
+    st.session_state.pop("download_bytes", None)
+    st.session_state.pop("last_save_message", None)
+    st.session_state.pop("last_save_error", None)
     st.session_state["question_df"] = df
     st.session_state["question_total"] = len(df)
     st.session_state["question_source"] = source_name
@@ -246,6 +252,32 @@ def format_size(size_bytes: Optional[int]) -> str:
     if size_bytes >= 1024 * 1024:
         return f"{size_bytes / (1024 * 1024):.1f} MB"
     return f"{size_bytes / 1024:.1f} KB"
+
+
+def sanitize_filename_component(value: Optional[str]) -> str:
+    """Return a filesystem-safe component derived from the provided value."""
+    if not value:
+        return "user"
+    cleaned = re.sub(r"[^0-9A-Za-z]+", "_", value)
+    cleaned = cleaned.strip("_")
+    return cleaned or "user"
+
+
+def build_download_filename(source_name: Optional[str], username: Optional[str]) -> str:
+    """Construct the download filename with the required suffix."""
+    base_name = Path(source_name or "questions").stem or "questions"
+    safe_base = sanitize_filename_component(base_name)
+    safe_user = sanitize_filename_component(username or "")
+    return f"{safe_base}_edited_{safe_user}.xlsx"
+
+
+def dataframe_to_excel_bytes(df: pd.DataFrame) -> bytes:
+    """Serialize the dataframe to an Excel binary stream."""
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False)
+    buffer.seek(0)
+    return buffer.getvalue()
 
 
 def style_file_uploaders(configs: List[dict]) -> None:
@@ -698,6 +730,28 @@ st.session_state["question_index"] = current_index  # Clamp in case data size ch
 row = question_df.iloc[current_index]
 row_id = str(row.get(ROW_ID_COL, "") or "")
 rows_label = f"({current_index + 1} of {total_rows} rows)"
+option_suffixes = ["A", "B", "C", "D"]
+question_key = f"tamil_question_{current_index}"
+explanation_key = f"tamil_explanation_{current_index}"
+option_widget_keys = [f"tamil_option_{suffix}_{current_index}" for suffix in option_suffixes]
+
+tamil_question_default = str(row.get(TAMIL_QUESTION_COL, ""))
+tamil_options_default = parse_tamil_options(row.get(TAMIL_OPTIONS_COL, ""))
+tamil_explanation_default = str(row.get(TAMIL_EXPLANATION_COL, row.get("விளக்கம்", "")))
+
+editable_defaults = {
+    question_key: tamil_question_default,
+    explanation_key: tamil_explanation_default,
+}
+for widget_key, opt_value in zip(option_widget_keys, tamil_options_default):
+    editable_defaults[widget_key] = opt_value
+
+for key, default in editable_defaults.items():
+    st.session_state.setdefault(key, default)
+
+current_values = {key: st.session_state.get(key, default) for key, default in editable_defaults.items()}
+has_unsaved_changes = any(current_values[key] != default for key, default in editable_defaults.items())
+download_ready = bool(st.session_state.get("download_ready")) and not has_unsaved_changes
 
 cols = st.columns([1.3, 1.8, 0.9, 0.9, 0.9, 0.9], gap="small")
 
@@ -725,7 +779,21 @@ with cols[3]:
 
 with cols[4]:
     st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
-    save_clicked = st.button("Save", key="nav_save")
+    save_clicked = st.button("Save", key="nav_save", disabled=not has_unsaved_changes)
+    download_bytes = st.session_state.get("download_bytes")
+    if download_ready and download_bytes:
+        download_filename = build_download_filename(
+            st.session_state.get("question_source"),
+            st.session_state.get("sme_display_name") or st.session_state.get("sme_email"),
+        )
+        st.download_button(
+            "⬇️",
+            data=download_bytes,
+            file_name=download_filename,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key="nav_download",
+            help="Download updated Excel file",
+        )
     st.markdown("</div>", unsafe_allow_html=True)
 
 with cols[5]:
@@ -741,24 +809,44 @@ if next_clicked:
     st.session_state["question_index"] = min(total_rows - 1, current_index + 1)
     safe_rerun()
 
-if save_clicked:
+if save_clicked and has_unsaved_changes:
+    row_idx = question_df.index[current_index]
+    options_for_save = [st.session_state.get(key, "").strip() for key in option_widget_keys]
+    joined_options = " | ".join(option for option in options_for_save if option)
+    question_df.at[row_idx, TAMIL_QUESTION_COL] = st.session_state.get(question_key, "")
+    question_df.at[row_idx, TAMIL_OPTIONS_COL] = joined_options
+    question_df.at[row_idx, TAMIL_EXPLANATION_COL] = st.session_state.get(explanation_key, "")
+    st.session_state["question_df"] = question_df
     st.session_state["nav_last_save"] = pd.Timestamp.now().isoformat()
+    try:
+        st.session_state["download_bytes"] = dataframe_to_excel_bytes(question_df)
+        st.session_state["download_ready"] = True
+        st.session_state["last_save_message"] = "Changes saved successfully."
+        st.session_state.pop("last_save_error", None)
+    except Exception as exc:  # noqa: BLE001
+        st.session_state["last_save_error"] = f"Unable to prepare download: {exc}"
+        st.session_state["download_ready"] = False
+        st.session_state.pop("download_bytes", None)
+    safe_rerun()
 
 if logout_clicked:
     st.session_state.clear()
     safe_rerun()
 
-current_index = st.session_state["question_index"]
-row = question_df.iloc[current_index]
-row_id = str(row.get(ROW_ID_COL, "") or "")
+save_message = st.session_state.pop("last_save_message", None)
+if save_message:
+    st.success(save_message)
 
+save_error = st.session_state.pop("last_save_error", None)
+if save_error:
+    st.error(save_error)
 
 
 # --- DATA EXTRACTION FOR CURRENT ROW ---
-tamil_question = str(row.get(TAMIL_QUESTION_COL, ""))
-tamil_options = parse_tamil_options(row.get(TAMIL_OPTIONS_COL, ""))
+tamil_question = current_values[question_key]
+tamil_options = [current_values[key] for key in option_widget_keys]
 tamil_answer = str(row.get(TAMIL_ANSWER_COL, ""))
-tamil_explanation = str(row.get(TAMIL_EXPLANATION_COL, row.get("விளக்கம்", "")))
+tamil_explanation = current_values[explanation_key]
 english_question = str(row.get(ENGLISH_QUESTION_COL, ""))
 english_options = str(row.get(ENGLISH_OPTIONS_COL, ""))
 english_answer = str(row.get(ENGLISH_ANSWER_COL, ""))
@@ -777,18 +865,16 @@ st.text_area(
 st.markdown('<div class="tight-label">விருப்பங்கள்</div>', unsafe_allow_html=True)
 opt_cols_row1 = st.columns(2, gap="small")
 opt_cols_row2 = st.columns(2, gap="small")
-option_keys = ["A", "B", "C", "D"]
-
-for col, opt_value, key_suffix in zip(
+for col, opt_value, widget_key in zip(
     opt_cols_row1 + opt_cols_row2,
     tamil_options,
-    option_keys,
+    option_widget_keys,
 ):
     with col:
         st.text_area(
             "",
             value=opt_value,
-            key=f"tamil_option_{key_suffix}_{current_index}",
+            key=widget_key,
             height=40,
             label_visibility="collapsed",
         )
@@ -797,7 +883,7 @@ st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_al
 st.text_area(
     "",
     value=tamil_explanation,
-    key=f"tamil_explanation_{current_index}",
+    key=explanation_key,
     height=175,
     label_visibility="collapsed",
 )
