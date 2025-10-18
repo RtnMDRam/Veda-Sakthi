@@ -165,6 +165,23 @@ display:none !important:}
         font-size: 0.78rem !important;
         border-radius: 8px !important;
     }
+    .nav-save-btn .stDownloadButton > button {
+        width: 40px !important;
+        height: 36px !important;
+        border-radius: 8px !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1rem !important;
+        background: #f3f4f6 !important;
+        color: #1f2937 !important;
+        border: 1px solid #d1d5db !important;
+    }
+    .nav-save-btn .stDownloadButton > button:hover {
+        background: #e5e7eb !important;
+        border-color: #9ca3af !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -174,6 +191,7 @@ display:none !important:}
 DATA_DIR = Path(__file__).resolve().parent
 DEFAULT_QUESTION_FILE = DATA_DIR / "bl_bio_bot_unit_4_chap_9_the_tissues_qb.xlsx"
 SME_CREDENTIALS_FILE = DATA_DIR / "SME_Data.xlsx"
+SESSION_STORAGE_DIR = DATA_DIR / "user_sessions"
 TAMIL_QUESTION_COL = "கேள்வி"
 TAMIL_OPTIONS_COL = "விருப்பங்கள் "
 TAMIL_ANSWER_COL = "பதில் "
@@ -278,6 +296,119 @@ def dataframe_to_excel_bytes(df: pd.DataFrame) -> bytes:
         df.to_excel(writer, index=False)
     buffer.seek(0)
     return buffer.getvalue()
+
+
+def get_user_storage_paths(user_identifier: Optional[str]) -> tuple[Optional[Path], Optional[Path]]:
+    """Return workbook and metadata storage paths for a given user."""
+    if not user_identifier:
+        return None, None
+    SESSION_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+    safe_user = sanitize_filename_component(user_identifier)
+    workbook_path = SESSION_STORAGE_DIR / f"{safe_user}_workspace.xlsx"
+    metadata_path = SESSION_STORAGE_DIR / f"{safe_user}_metadata.json"
+    return workbook_path, metadata_path
+
+
+def persist_user_progress(current_index: int) -> None:
+    """Persist the current workbook and index for the active SME."""
+    df = st.session_state.get("question_df")
+    user_identifier = st.session_state.get("sme_email")
+    if df is None or not user_identifier:
+        return
+
+    workbook_path, metadata_path = get_user_storage_paths(user_identifier)
+    if workbook_path is None or metadata_path is None:
+        return
+
+    try:
+        workbook_path.write_bytes(dataframe_to_excel_bytes(df))
+        metadata = {
+            "current_index": int(current_index),
+            "source_name": st.session_state.get("question_source"),
+            "saved_at": pd.Timestamp.now().isoformat(),
+        }
+        metadata_path.write_text(json.dumps(metadata))
+    except Exception as exc:  # noqa: BLE001
+        st.session_state["last_save_error"] = f"Unable to persist session: {exc}"
+
+
+def load_saved_progress() -> None:
+    """Restore the SME's last saved progress if it exists."""
+    if st.session_state.get("resume_checked"):
+        return
+    if st.session_state.get("question_df") is not None:
+        st.session_state["resume_checked"] = True
+        return
+    user_identifier = st.session_state.get("sme_email")
+    if not user_identifier:
+        return
+
+    workbook_path, metadata_path = get_user_storage_paths(user_identifier)
+    if not workbook_path or not workbook_path.exists() or not metadata_path or not metadata_path.exists():
+        st.session_state["resume_checked"] = True
+        return
+
+    try:
+        metadata = json.loads(metadata_path.read_text())
+    except Exception:  # noqa: BLE001
+        metadata = {}
+
+    df = load_dataframe(workbook_path)
+    if df is None:
+        st.session_state["resume_checked"] = True
+        return
+
+    source_name = metadata.get("source_name") or workbook_path.name
+    set_dataset(
+        df,
+        source_name,
+        source_size=workbook_path.stat().st_size if workbook_path.exists() else None,
+        source_type="resume",
+    )
+    saved_index = metadata.get("current_index", 0)
+    st.session_state["question_index"] = max(0, min(saved_index, len(df) - 1))
+    try:
+        st.session_state["download_bytes"] = workbook_path.read_bytes()
+        st.session_state["download_ready"] = True
+    except Exception:  # noqa: BLE001
+        st.session_state.pop("download_bytes", None)
+        st.session_state["download_ready"] = False
+    st.session_state["resume_checked"] = True
+    st.session_state["resume_loaded"] = True
+
+
+def apply_current_row_edits(
+    question_df: Optional[pd.DataFrame],
+    current_index: int,
+    question_key: str,
+    option_widget_keys: List[str],
+    explanation_key: str,
+) -> bool:
+    """Persist the current widget inputs back into the dataframe."""
+    if question_df is None or question_df.empty:
+        return False
+    if current_index < 0 or current_index >= len(question_df):
+        return False
+
+    row_idx = question_df.index[current_index]
+    new_question = st.session_state.get(question_key, "")
+    new_explanation = st.session_state.get(explanation_key, "")
+    new_options = [st.session_state.get(key, "") for key in option_widget_keys]
+    joined_options = " | ".join(option.strip() for option in new_options if option.strip())
+
+    changed = False
+    if question_df.at[row_idx, TAMIL_QUESTION_COL] != new_question:
+        changed = True
+    if question_df.at[row_idx, TAMIL_OPTIONS_COL] != joined_options:
+        changed = True
+    if question_df.at[row_idx, TAMIL_EXPLANATION_COL] != new_explanation:
+        changed = True
+
+    question_df.at[row_idx, TAMIL_QUESTION_COL] = new_question
+    question_df.at[row_idx, TAMIL_OPTIONS_COL] = joined_options
+    question_df.at[row_idx, TAMIL_EXPLANATION_COL] = new_explanation
+    st.session_state["question_df"] = question_df
+    return changed
 
 
 def style_file_uploaders(configs: List[dict]) -> None:
@@ -650,6 +781,8 @@ def render_header():
 
 render_header()
 
+load_saved_progress()
+
 # --- INITIAL DATA LOAD ---
 col_questionnaire, col_glossary = st.columns(2, gap="large")
 with col_questionnaire:
@@ -683,7 +816,10 @@ if questionnaire_file is not None:
                 source_type="upload",
             )
 else:
-    if st.session_state.get("question_source_type") != "default":
+    if (
+        st.session_state.get("question_df") is None
+        and st.session_state.get("question_source_type") != "default"
+    ):
         if DEFAULT_QUESTION_FILE.exists():
             default_df = load_dataframe(DEFAULT_QUESTION_FILE)
             if default_df is not None:
@@ -727,6 +863,7 @@ current_index = min(st.session_state.get("question_index", 0), total_rows - 1)
 st.session_state["question_index"] = current_index  # Clamp in case data size changed.
 
 # --- NAVIGATION CONTROLS ---
+nav_container = st.container()
 row = question_df.iloc[current_index]
 row_id = str(row.get(ROW_ID_COL, "") or "")
 rows_label = f"({current_index + 1} of {total_rows} rows)"
@@ -749,57 +886,111 @@ for widget_key, opt_value in zip(option_widget_keys, tamil_options_default):
 for key, default in editable_defaults.items():
     st.session_state.setdefault(key, default)
 
-current_values = {key: st.session_state.get(key, default) for key, default in editable_defaults.items()}
-has_unsaved_changes = any(current_values[key] != default for key, default in editable_defaults.items())
-download_ready = bool(st.session_state.get("download_ready")) and not has_unsaved_changes
 
-cols = st.columns([1.3, 1.8, 0.9, 0.9, 0.9, 0.9], gap="small")
+# --- EDITABLE BLOCK (TAMIL) ---
+st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
+st.text_area(
+    "",
+    value=st.session_state.get(question_key, editable_defaults[question_key]),
+    key=question_key,
+    height=52,
+    label_visibility="collapsed",
+)
 
-with cols[0]:
-    st.markdown(f"<div class='nav-id'>ID {row_id}</div>", unsafe_allow_html=True)
+st.markdown('<div class="tight-label">விருப்பங்கள்</div>', unsafe_allow_html=True)
+opt_cols_row1 = st.columns(2, gap="small")
+opt_cols_row2 = st.columns(2, gap="small")
+for col, widget_key in zip(opt_cols_row1 + opt_cols_row2, option_widget_keys):
+    with col:
+        st.text_area(
+            "",
+            value=st.session_state.get(widget_key, editable_defaults[widget_key]),
+            key=widget_key,
+            height=40,
+            label_visibility="collapsed",
+        )
 
-with cols[1]:
-    st.markdown(f"<div class='nav-rows'>{rows_label}</div>", unsafe_allow_html=True)
+st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
+st.text_area(
+    "",
+    value=st.session_state.get(explanation_key, editable_defaults[explanation_key]),
+    key=explanation_key,
+    height=175,
+    label_visibility="collapsed",
+)
 
-with cols[2]:
-    prev_clicked = st.button(
-        "Back",
-        use_container_width=True,
-        disabled=current_index <= 0,
-        key="nav_prev",
+current_values = {key: st.session_state.get(key, "") for key in editable_defaults}
+has_unsaved_changes = any(current_values[key] != editable_defaults[key] for key in editable_defaults)
+if has_unsaved_changes:
+    st.session_state["download_ready"] = False
+
+download_bytes = st.session_state.get("download_bytes")
+download_ready = bool(st.session_state.get("download_ready")) and bool(download_bytes)
+
+download_filename = ""
+if download_ready:
+    download_filename = build_download_filename(
+        st.session_state.get("question_source"),
+        st.session_state.get("sme_display_name") or st.session_state.get("sme_email"),
     )
 
-with cols[3]:
-    next_clicked = st.button(
-        "Next",
-        use_container_width=True,
-        disabled=current_index >= total_rows - 1,
-        key="nav_next",
-    )
+with nav_container:
+    cols = st.columns([1.3, 1.8, 0.9, 0.9, 0.9, 0.9], gap="small")
 
-with cols[4]:
-    st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
-    save_clicked = st.button("Save", key="nav_save", disabled=not has_unsaved_changes)
-    download_bytes = st.session_state.get("download_bytes")
-    if download_ready and download_bytes:
-        download_filename = build_download_filename(
-            st.session_state.get("question_source"),
-            st.session_state.get("sme_display_name") or st.session_state.get("sme_email"),
-        )
-        st.download_button(
-            "⬇️",
-            data=download_bytes,
-            file_name=download_filename,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            key="nav_download",
-            help="Download updated Excel file",
-        )
-    st.markdown("</div>", unsafe_allow_html=True)
+    with cols[0]:
+        st.markdown(f"<div class='nav-id'>ID {row_id}</div>", unsafe_allow_html=True)
 
-with cols[5]:
-    st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
-    logout_clicked = st.button("Logout", key="nav_logout")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with cols[1]:
+        st.markdown(f"<div class='nav-rows'>{rows_label}</div>", unsafe_allow_html=True)
+
+    with cols[2]:
+        prev_clicked = st.button(
+            "Back",
+            use_container_width=True,
+            disabled=current_index <= 0,
+            key="nav_prev",
+        )
+
+    with cols[3]:
+        next_clicked = st.button(
+            "Next",
+            use_container_width=True,
+            disabled=current_index >= total_rows - 1,
+            key="nav_next",
+        )
+
+    with cols[4]:
+        st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
+        inner_cols = st.columns([1.0, 0.35], gap="small")
+        with inner_cols[0]:
+            save_clicked = st.button("Save", key="nav_save", disabled=not has_unsaved_changes)
+        with inner_cols[1]:
+            if download_ready and download_bytes:
+                st.download_button(
+                    "⬇️",
+                    data=download_bytes,
+                    file_name=download_filename,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    key="nav_download",
+                    help="Download updated Excel file",
+                )
+            else:
+                st.markdown("<div style='height:0px;'></div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with cols[5]:
+        st.markdown("<div class='nav-save-btn'>", unsafe_allow_html=True)
+        logout_clicked = st.button("Logout", key="nav_logout")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+if 'prev_clicked' not in locals():
+    prev_clicked = False
+if 'next_clicked' not in locals():
+    next_clicked = False
+if 'save_clicked' not in locals():
+    save_clicked = False
+if 'logout_clicked' not in locals():
+    logout_clicked = False
 
 if prev_clicked:
     st.session_state["question_index"] = max(0, current_index - 1)
@@ -810,19 +1001,14 @@ if next_clicked:
     safe_rerun()
 
 if save_clicked and has_unsaved_changes:
-    row_idx = question_df.index[current_index]
-    options_for_save = [st.session_state.get(key, "").strip() for key in option_widget_keys]
-    joined_options = " | ".join(option for option in options_for_save if option)
-    question_df.at[row_idx, TAMIL_QUESTION_COL] = st.session_state.get(question_key, "")
-    question_df.at[row_idx, TAMIL_OPTIONS_COL] = joined_options
-    question_df.at[row_idx, TAMIL_EXPLANATION_COL] = st.session_state.get(explanation_key, "")
-    st.session_state["question_df"] = question_df
+    apply_current_row_edits(question_df, current_index, question_key, option_widget_keys, explanation_key)
     st.session_state["nav_last_save"] = pd.Timestamp.now().isoformat()
     try:
-        st.session_state["download_bytes"] = dataframe_to_excel_bytes(question_df)
+        st.session_state["download_bytes"] = dataframe_to_excel_bytes(st.session_state["question_df"])
         st.session_state["download_ready"] = True
         st.session_state["last_save_message"] = "Changes saved successfully."
         st.session_state.pop("last_save_error", None)
+        persist_user_progress(current_index)
     except Exception as exc:  # noqa: BLE001
         st.session_state["last_save_error"] = f"Unable to prepare download: {exc}"
         st.session_state["download_ready"] = False
@@ -830,12 +1016,35 @@ if save_clicked and has_unsaved_changes:
     safe_rerun()
 
 if logout_clicked:
+    apply_current_row_edits(question_df, current_index, question_key, option_widget_keys, explanation_key)
+    persist_user_progress(st.session_state.get("question_index", 0))
     st.session_state.clear()
+    st.session_state["authenticated"] = False
     safe_rerun()
 
 save_message = st.session_state.pop("last_save_message", None)
 if save_message:
-    st.success(save_message)
+    st.markdown(
+        """
+        <style>
+        .save-banner {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ecfdf5;
+            color: #047857;
+            padding: 0.55rem 1.45rem;
+            border-radius: 999px;
+            box-shadow: 0 18px 36px rgba(16, 185, 129, 0.22);
+            font-weight: 600;
+            z-index: 2000;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(f"<div class='save-banner'>{save_message}</div>", unsafe_allow_html=True)
 
 save_error = st.session_state.pop("last_save_error", None)
 if save_error:
@@ -843,50 +1052,14 @@ if save_error:
 
 
 # --- DATA EXTRACTION FOR CURRENT ROW ---
-tamil_question = current_values[question_key]
-tamil_options = [current_values[key] for key in option_widget_keys]
+tamil_question = st.session_state.get(question_key, editable_defaults[question_key])
+tamil_options = [st.session_state.get(key, editable_defaults[key]) for key in option_widget_keys]
 tamil_answer = str(row.get(TAMIL_ANSWER_COL, ""))
-tamil_explanation = current_values[explanation_key]
+tamil_explanation = st.session_state.get(explanation_key, editable_defaults[explanation_key])
 english_question = str(row.get(ENGLISH_QUESTION_COL, ""))
 english_options = str(row.get(ENGLISH_OPTIONS_COL, ""))
 english_answer = str(row.get(ENGLISH_ANSWER_COL, ""))
 english_explanation = str(row.get(ENGLISH_EXPLANATION_COL, ""))
-
-# --- EDITABLE BLOCK (TAMIL) ---
-st.markdown('<div class="tight-label">கேள்வி</div>', unsafe_allow_html=True)
-st.text_area(
-    "",
-    value=tamil_question,
-    key=f"tamil_question_{current_index}",
-    height=52,
-    label_visibility="collapsed",
-)
-
-st.markdown('<div class="tight-label">விருப்பங்கள்</div>', unsafe_allow_html=True)
-opt_cols_row1 = st.columns(2, gap="small")
-opt_cols_row2 = st.columns(2, gap="small")
-for col, opt_value, widget_key in zip(
-    opt_cols_row1 + opt_cols_row2,
-    tamil_options,
-    option_widget_keys,
-):
-    with col:
-        st.text_area(
-            "",
-            value=opt_value,
-            key=widget_key,
-            height=40,
-            label_visibility="collapsed",
-        )
-
-st.markdown('<div class="tight-label">விளக்கம்</div>', unsafe_allow_html=True)
-st.text_area(
-    "",
-    value=tamil_explanation,
-    key=explanation_key,
-    height=175,
-    label_visibility="collapsed",
-)
 
 # --- DIVIDER ---
 st.markdown(
